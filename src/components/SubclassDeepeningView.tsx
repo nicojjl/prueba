@@ -1,6 +1,7 @@
 import React from 'react';
 import { DeepeningSubclass, CourseItem } from '../types';
-import { Lightbulb, BookOpen, Layers, Sparkles, HelpCircle } from 'lucide-react';
+import { Lightbulb, BookOpen, Layers, Sparkles } from 'lucide-react';
+import { motion } from 'motion/react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface SubclassDeepeningViewProps {
@@ -13,7 +14,12 @@ export const SubclassDeepeningView: React.FC<SubclassDeepeningViewProps> = ({
   deepeningData,
 }) => {
   return (
-    <div className="space-y-10">
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-10"
+    >
       {/* Header Banner */}
       <div className="bg-[#FFF7ED] border border-[#FDBA74] rounded-2xl p-6 sm:p-10 shadow-xs relative overflow-hidden">
         <div className="flex items-center gap-2 mb-3">
@@ -34,7 +40,12 @@ export const SubclassDeepeningView: React.FC<SubclassDeepeningViewProps> = ({
       </div>
 
       {/* 1. Profundización Teórica Extendida */}
-      <section className="bg-white border border-[#E5E2DE] rounded-2xl p-6 sm:p-10 text-[#1A1A1A] shadow-xs space-y-4">
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-white border border-[#E5E2DE] rounded-2xl p-6 sm:p-10 text-[#1A1A1A] shadow-xs space-y-4"
+      >
         <div className="flex items-center gap-2 pb-4 border-b border-[#F2F1EE]">
           <BookOpen className="w-5 h-5 text-[#C2410C]" />
           <h3 className="text-xl font-serif font-bold text-[#1A1A1A]">
@@ -42,10 +53,15 @@ export const SubclassDeepeningView: React.FC<SubclassDeepeningViewProps> = ({
           </h3>
         </div>
         <MarkdownRenderer content={deepeningData.moreTopicsContent} />
-      </section>
+      </motion.section>
 
       {/* 2. Analogías del Mundo Real */}
-      <section className="space-y-6">
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="space-y-6"
+      >
         <div className="flex items-center gap-2">
           <Lightbulb className="w-5 h-5 text-[#C2410C]" />
           <h3 className="text-xl font-serif font-bold text-[#1A1A1A]">
@@ -54,9 +70,12 @@ export const SubclassDeepeningView: React.FC<SubclassDeepeningViewProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {deepeningData.analogies.map((item, idx) => (
-            <div
+          {deepeningData.analogies.map((analogyItem, idx) => (
+            <motion.div
               key={idx}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.15 + idx * 0.05 }}
               className="bg-white border border-[#E5E2DE] rounded-2xl p-6 sm:p-8 space-y-4 shadow-xs relative overflow-hidden hover:border-[#C2410C]/40 transition group"
             >
               <div className="flex items-center justify-between gap-2">
@@ -64,16 +83,16 @@ export const SubclassDeepeningView: React.FC<SubclassDeepeningViewProps> = ({
                   Analogía 0{idx + 1}
                 </span>
                 <span className="text-xs text-[#8C8882] font-mono font-semibold">
-                  {item.concept}
+                  {analogyItem.concept}
                 </span>
               </div>
 
               <h4 className="text-lg font-serif font-bold text-[#1A1A1A]">
-                {item.title}
+                {analogyItem.title}
               </h4>
 
               <p className="text-xs sm:text-sm text-[#4A4742] leading-relaxed bg-[#F9F8F6] p-4 rounded-xl border border-[#E5E2DE]">
-                "{item.analogy}"
+                "{analogyItem.analogy}"
               </p>
 
               <div className="pt-2 border-t border-[#F2F1EE] flex items-start gap-2 text-xs text-[#10B981]">
@@ -82,16 +101,21 @@ export const SubclassDeepeningView: React.FC<SubclassDeepeningViewProps> = ({
                   <span className="font-bold text-[#065F46] block text-[11px] uppercase tracking-wider mb-0.5">
                     ¿Por qué funciona este modelo mental?
                   </span>
-                  {item.whyItWorks}
+                  {analogyItem.whyItWorks}
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </section>
+      </motion.section>
 
       {/* 3. Explicación Alternativa / Desde Otra Perspectiva */}
-      <section className="bg-white border border-[#E5E2DE] rounded-2xl p-6 sm:p-10 text-[#1A1A1A] shadow-xs space-y-4">
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="bg-white border border-[#E5E2DE] rounded-2xl p-6 sm:p-10 text-[#1A1A1A] shadow-xs space-y-4"
+      >
         <div className="flex items-center gap-2 pb-4 border-b border-[#F2F1EE]">
           <Layers className="w-5 h-5 text-[#C2410C]" />
           <h3 className="text-xl font-serif font-bold text-[#1A1A1A]">
@@ -99,7 +123,7 @@ export const SubclassDeepeningView: React.FC<SubclassDeepeningViewProps> = ({
           </h3>
         </div>
         <MarkdownRenderer content={deepeningData.alternativeExplanation} />
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 };

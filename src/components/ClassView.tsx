@@ -13,8 +13,9 @@ import {
   BookOpen,
   Layers,
   Wrench,
-  Bot,
+  Code,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { BigOChartVisualizer } from './Visualizers/BigOChartVisualizer';
 import { PointerVisualizer } from './Visualizers/PointerVisualizer';
@@ -26,7 +27,6 @@ import { GraphVisualizer } from './Visualizers/GraphVisualizer';
 import { getSubclassesForCourse } from '../data/subclassesData';
 import { SubclassDeepeningView } from './SubclassDeepeningView';
 import { SubclassPracticeView } from './SubclassPracticeView';
-import { PromptGenerator } from './PromptGenerator';
 
 interface ClassViewProps {
   item: CourseItem;
@@ -35,7 +35,6 @@ interface ClassViewProps {
   isCompleted: boolean;
   onToggleCompleted: () => void;
   onOpenExercise: () => void;
-  onSendToAITutor?: (promptText: string) => void;
 }
 
 export const ClassView: React.FC<ClassViewProps> = ({
@@ -45,7 +44,6 @@ export const ClassView: React.FC<ClassViewProps> = ({
   isCompleted,
   onToggleCompleted,
   onOpenExercise,
-  onSendToAITutor,
 }) => {
   const [subclassTab, setSubclassTab] = useState<'main' | 'subclass_deepening' | 'subclass_practice'>('main');
   const [questionAnswers, setQuestionAnswers] = useState<Record<string, number>>({});
@@ -79,7 +77,14 @@ export const ClassView: React.FC<ClassViewProps> = ({
   };
 
   return (
-    <div className="flex-1 bg-[#F9F8F6] text-[#1A1A1A] overflow-y-auto p-4 sm:p-8 lg:p-12 space-y-8">
+    <motion.div
+      key={`${item.id}-${subclassTab}`}
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -15 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="flex-1 bg-[#F9F8F6] text-[#1A1A1A] overflow-y-auto p-4 sm:p-8 lg:p-12 space-y-8"
+    >
       {/* Sub-class Navigation Tabs Bar */}
       <div className="bg-white border border-[#E5E2DE] p-1.5 rounded-2xl shadow-xs flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
@@ -116,7 +121,7 @@ export const ClassView: React.FC<ClassViewProps> = ({
             }`}
           >
             <Wrench className="w-4 h-4 text-[#C2410C]" />
-            <span>Subclase 1B: Práctica &amp; Cuestionario IA</span>
+            <span>Subclase 1B: Práctica &amp; Cuestionario</span>
           </button>
         </div>
 
@@ -143,7 +148,6 @@ export const ClassView: React.FC<ClassViewProps> = ({
         <SubclassPracticeView
           item={item}
           practiceData={practice}
-          onSendToAITutor={onSendToAITutor}
           onOpenExercisesTab={onOpenExercise}
         />
       )}
@@ -152,7 +156,12 @@ export const ClassView: React.FC<ClassViewProps> = ({
       {subclassTab === 'main' && (
         <>
           {/* Header Banner */}
-          <div className="bg-white border border-[#E5E2DE] rounded-2xl p-6 sm:p-10 shadow-xs relative overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white border border-[#E5E2DE] rounded-2xl p-6 sm:p-10 shadow-xs relative overflow-hidden"
+          >
             <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
               <div className="flex items-center gap-2">
                 <span
@@ -191,11 +200,16 @@ export const ClassView: React.FC<ClassViewProps> = ({
               <Bookmark className="w-4 h-4 shrink-0" />
               <span>Referencia Bibliográfica: {item.cormenChapter}</span>
             </div>
-          </div>
+          </motion.div>
 
           {/* Embedded Visualizer */}
           {item.visualizerType !== 'none' && (
-            <section className="space-y-3">
+            <motion.section
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.3 }}
+              className="space-y-3"
+            >
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#C2410C]" />
                 <h2 className="text-xs font-bold text-[#8C8882] uppercase tracking-widest">
@@ -203,17 +217,27 @@ export const ClassView: React.FC<ClassViewProps> = ({
                 </h2>
               </div>
               {renderVisualizer()}
-            </section>
+            </motion.section>
           )}
 
           {/* Main Theory Content */}
-          <section className="bg-white border border-[#E5E2DE] rounded-2xl p-6 sm:p-10 text-[#1A1A1A] shadow-xs">
+          <motion.section
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.3 }}
+            className="bg-white border border-[#E5E2DE] rounded-2xl p-6 sm:p-10 text-[#1A1A1A] shadow-xs"
+          >
             <MarkdownRenderer content={item.theoryContent} />
-          </section>
+          </motion.section>
 
           {/* Check Questions Section */}
           {item.checkQuestions && item.checkQuestions.length > 0 && (
-            <section className="bg-white border border-[#E5E2DE] rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+            <motion.section
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
+              className="bg-white border border-[#E5E2DE] rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs"
+            >
               <div className="flex items-center gap-2 pb-4 border-b border-[#F2F1EE]">
                 <HelpCircle className="w-5 h-5 text-[#C2410C]" />
                 <h2 className="text-xl font-serif font-bold text-[#1A1A1A]">
@@ -228,8 +252,11 @@ export const ClassView: React.FC<ClassViewProps> = ({
                   const isCorrect = selectedOpt === q.correctIndex;
 
                   return (
-                    <div
+                    <motion.div
                       key={q.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: qIdx * 0.05 }}
                       className="bg-[#F9F8F6] border border-[#E5E2DE] rounded-xl p-6 space-y-4"
                     >
                       <div className="font-semibold text-[#1A1A1A] text-sm sm:text-base flex items-start gap-3">
@@ -275,60 +302,57 @@ export const ClassView: React.FC<ClassViewProps> = ({
                       </div>
 
                       {/* Feedback Box */}
-                      {isAnswered && (
-                        <div
-                          className={`p-5 rounded-xl border text-xs sm:text-sm space-y-2.5 ${
-                            isCorrect
-                              ? 'bg-[#ECFDF5] border-[#10B981] text-[#065F46]'
-                              : 'bg-[#FEF2F2] border-[#EF4444] text-[#991B1B]'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 font-bold text-sm">
-                            {isCorrect ? (
-                              <>
-                                <Check className="w-4 h-4 text-[#10B981]" />
-                                <span>¡Respuesta Correcta!</span>
-                              </>
-                            ) : (
-                              <>
-                                <X className="w-4 h-4 text-[#EF4444]" />
-                                <span>Respuesta incorrecta:</span>
-                              </>
-                            )}
-                          </div>
+                      <AnimatePresence>
+                        {isAnswered && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className={`p-5 rounded-xl border text-xs sm:text-sm space-y-2.5 overflow-hidden ${
+                              isCorrect
+                                ? 'bg-[#ECFDF5] border-[#10B981] text-[#065F46]'
+                                : 'bg-[#FEF2F2] border-[#EF4444] text-[#991B1B]'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 font-bold text-sm">
+                              {isCorrect ? (
+                                <>
+                                  <Check className="w-4 h-4 text-[#10B981]" />
+                                  <span>¡Respuesta Correcta!</span>
+                                </>
+                              ) : (
+                                <>
+                                  <X className="w-4 h-4 text-[#EF4444]" />
+                                  <span>Respuesta incorrecta:</span>
+                                </>
+                              )}
+                            </div>
 
-                          <div className="leading-relaxed">
-                            <MarkdownRenderer content={q.explanation} />
-                          </div>
+                            <div className="leading-relaxed">
+                              <MarkdownRenderer content={q.explanation} />
+                            </div>
 
-                          {!isCorrect && q.analogousExplanation && (
-                            <div className="mt-3 p-4 bg-[#FFF7ED] border border-[#FDBA74] rounded-lg text-[#C2410C] flex items-start gap-3">
-                              <Lightbulb className="w-4 h-4 text-[#C2410C] shrink-0 mt-0.5" />
-                              <div className="flex-1">
-                                <span className="font-bold block mb-1 uppercase text-[10px] tracking-wider">
-                                  Analogía Alternativa del Mentor:
-                                </span>
-                                <div className="text-xs text-[#1A1A1A] leading-relaxed">
-                                  <MarkdownRenderer content={q.analogousExplanation} />
+                            {!isCorrect && q.analogousExplanation && (
+                              <div className="mt-3 p-4 bg-[#FFF7ED] border border-[#FDBA74] rounded-lg text-[#C2410C] flex items-start gap-3">
+                                <Lightbulb className="w-4 h-4 text-[#C2410C] shrink-0 mt-0.5" />
+                                <div className="flex-1">
+                                  <span className="font-bold block mb-1 uppercase text-[10px] tracking-wider">
+                                    Explicación Alternativa:
+                                  </span>
+                                  <div className="text-xs text-[#1A1A1A] leading-relaxed">
+                                    <MarkdownRenderer content={q.analogousExplanation} />
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
                   );
                 })}
               </div>
-
-              {/* Prompt Generator for Wrong Answers */}
-              <PromptGenerator
-                item={item}
-                quizQuestions={item.checkQuestions}
-                userAnswers={questionAnswers}
-                onSendToAITutor={onSendToAITutor}
-              />
-            </section>
+            </motion.section>
           )}
 
           {/* Completion Banner */}
@@ -338,7 +362,7 @@ export const ClassView: React.FC<ClassViewProps> = ({
               ¿Listo para dar el siguiente paso en esta lección?
             </h3>
             <p className="text-xs sm:text-sm text-[#4A4742] max-w-xl mx-auto leading-relaxed">
-              Explora las subclases de profundización y problemas, o dirígete directamente al editor interactivo de código.
+              Explora las subclases de profundización y problemas, o dirígete directamente al editor interactivo de código C.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -355,14 +379,15 @@ export const ClassView: React.FC<ClassViewProps> = ({
                 className="px-5 py-2.5 bg-[#1A1A1A] hover:bg-black text-white font-bold rounded-full text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-1.5"
               >
                 <Wrench className="w-4 h-4 text-[#FDBA74]" />
-                <span>Ir a Subclase 1B (Práctica IA)</span>
+                <span>Ir a Subclase 1B (Práctica C)</span>
               </button>
 
               <button
                 onClick={onOpenExercise}
-                className="px-5 py-2.5 bg-[#C2410C] hover:bg-[#9A3412] text-white font-bold rounded-full text-xs uppercase tracking-wider transition shadow-sm"
+                className="px-5 py-2.5 bg-[#C2410C] hover:bg-[#9A3412] text-white font-bold rounded-full text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-1.5"
               >
-                Editor de Código
+                <Code className="w-4 h-4" />
+                <span>Editor de Código C</span>
               </button>
             </div>
           </div>
@@ -399,6 +424,6 @@ export const ClassView: React.FC<ClassViewProps> = ({
           </button>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };

@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import { CSyntaxHighlighter } from './CSyntaxHighlighter';
 
 interface MarkdownRendererProps {
   content: string;
@@ -89,6 +90,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       </blockquote>
     ),
     code: ({ inline, className, children, ...props }: any) => {
+      const codeString = Array.isArray(children) ? children.join('') : String(children || '');
       if (inline) {
         return (
           <code className="bg-[#F2F1EE] text-[#C2410C] font-mono font-semibold px-1.5 py-0.5 rounded text-xs border border-[#E5E2DE]" {...props}>
@@ -97,9 +99,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         );
       }
       return (
-        <pre className="bg-[#181818] text-[#E5E5E5] font-mono text-xs p-4 rounded-xl overflow-x-auto my-3 border border-[#252525] shadow-xs">
-          <code {...props}>{children}</code>
-        </pre>
+        <div className="my-3">
+          <CSyntaxHighlighter code={codeString.replace(/\n$/, '')} />
+        </div>
       );
     },
     hr: () => <hr className="my-6 border-[#E5E2DE]" />,
