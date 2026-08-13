@@ -94,9 +94,44 @@ export interface ChatMessage {
   timestamp: string;
 }
 
+export interface CSubTopic {
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  explanationMarkdown: string;
+  codeExample: string;
+  expectedOutput?: string;
+  keyConcepts: string[];
+  exercise?: Exercise;
+}
+
+export interface CChapter {
+  id: string;
+  chapterNumber: number;
+  title: string;
+  subtitle: string;
+  icon: string;
+  description: string;
+  summary?: string;
+  theoryContent: string;
+  analogies?: AnalogyItem[];
+  keyConcepts: string[];
+  codeExamples: {
+    title: string;
+    description: string;
+    code: string;
+    expectedOutput: string;
+  }[];
+  exercises: Exercise[];
+  quizQuestions: CheckQuestion[];
+  subtopics?: CSubTopic[];
+}
+
 export interface UserProgress {
   completedItems: string[]; // array of CourseItem ids
   solvedExercises: string[]; // array of Exercise ids
+  completedCSubtopics: string[]; // array of CSubTopic ids
   currentItemId: string;
   userNotes: Record<string, string>;
 }

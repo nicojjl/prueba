@@ -72,35 +72,42 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       <em className="italic text-[#4A4742]">{children}</em>
     ),
     ul: ({ children }: any) => (
-      <ul className="list-disc list-inside space-y-1.5 my-3 pl-2 text-sm text-[#33312E] leading-relaxed">
+      <ul className="list-disc list-outside space-y-2 my-3 pl-5 text-sm text-[#33312E] leading-relaxed">
         {children}
       </ul>
     ),
     ol: ({ children }: any) => (
-      <ol className="list-decimal list-inside space-y-1.5 my-3 pl-2 text-sm text-[#33312E] leading-relaxed">
+      <ol className="list-decimal list-outside space-y-2 my-3 pl-5 text-sm text-[#33312E] leading-relaxed">
         {children}
       </ol>
     ),
     li: ({ children }: any) => (
-      <li className="leading-relaxed">{children}</li>
+      <li className="leading-relaxed pl-1 mb-1">{children}</li>
     ),
     blockquote: ({ children }: any) => (
       <blockquote className="border-l-4 border-[#C2410C] bg-[#FFF7ED] p-3.5 rounded-r-xl my-4 text-sm text-[#1A1A1A] italic">
         {children}
       </blockquote>
     ),
-    code: ({ inline, className, children, ...props }: any) => {
+    code: ({ node, inline, className, children, ...props }: any) => {
       const codeString = Array.isArray(children) ? children.join('') : String(children || '');
-      if (inline) {
+      const match = /language-(\w+)/.exec(className || '');
+      // Determine if inline: if inline prop is true, or node.inline is true, or if there is no language- class AND no newlines in codeString
+      const isInline = inline === true || node?.inline === true || (!match && !codeString.includes('\n'));
+
+      if (isInline) {
         return (
-          <code className="bg-[#F2F1EE] text-[#C2410C] font-mono font-semibold px-1.5 py-0.5 rounded text-xs border border-[#E5E2DE]" {...props}>
-            {children}
+          <code
+            className="bg-[#1A1A1A] text-[#FDBA74] font-mono text-[0.85em] font-semibold px-2 py-0.5 rounded border border-stone-800 inline-block my-0.5 mx-0.5 align-baseline"
+            {...props}
+          >
+            {codeString}
           </code>
         );
       }
       return (
         <div className="my-3">
-          <CSyntaxHighlighter code={codeString.replace(/\n$/, '')} />
+          <CSyntaxHighlighter code={codeString.replace(/\n$/, '')} language={match ? match[1] : 'c'} />
         </div>
       );
     },

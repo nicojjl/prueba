@@ -1,6 +1,7 @@
 import { CourseItem } from '../types';
+import { EXERCISES_BY_COURSE } from './exercisesData';
 
-export const COURSES_DATA: CourseItem[] = [
+const RAW_COURSES_DATA: CourseItem[] = [
   {
     id: 'clase-1',
     number: 1,
@@ -1424,3 +1425,9 @@ Has recorrido con éxito la totalidad del núc\leo fundamental del libro **"Intr
     prevItemId: 'clase-15'
   }
 ];
+
+export const COURSES_DATA: CourseItem[] = RAW_COURSES_DATA.map((item) => ({
+  ...item,
+  exercises: EXERCISES_BY_COURSE[item.id] || item.exercises || [],
+}));
+
