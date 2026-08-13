@@ -128,14 +128,40 @@ export interface CChapter {
   subtopics?: CSubTopic[];
 }
 
-export interface UserProgress {
-  completedItems: string[]; // array of CourseItem ids
-  solvedExercises: string[]; // array of Exercise ids
-  completedCSubtopics: string[]; // array of CSubTopic ids
-  completedAlgorithms?: string[]; // array of Algorithm ids
-  currentItemId: string;
-  userNotes: Record<string, string>;
+export interface UserProfile {
+  nickname: string;
+  university: string;
+  avatar: string;
+  customTitle: string;
+  lastVisitDate: string;
+  streakDays: number;
 }
+
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  unlocked: boolean;
+  xpReward: number;
+  category: 'c_course' | 'algorithms' | 'streak' | 'general';
+}
+
+export interface LeaderboardEntry {
+  id: string;
+  name: string;
+  university: string;
+  avatar: string;
+  xp: number;
+  level: number;
+  streakDays: number;
+  solvedCount: number;
+  badgeCount: number;
+  title: string;
+  isCurrentUser?: boolean;
+  rank?: number;
+}
+
 
 export type AlgoCategory =
   | 'conceptos'

@@ -3,6 +3,7 @@ import { DeepeningSubclass, CourseItem } from '../types';
 import { Lightbulb, BookOpen, Layers, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { ExportSummaryButton } from './ExportSummaryButton';
 
 interface SubclassDeepeningViewProps {
   item: CourseItem;
@@ -22,13 +23,26 @@ export const SubclassDeepeningView: React.FC<SubclassDeepeningViewProps> = ({
     >
       {/* Header Banner */}
       <div className="bg-[#FFF7ED] border border-[#FDBA74] rounded-2xl p-6 sm:p-10 shadow-xs relative overflow-hidden">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-[10px] font-bold px-3 py-1 bg-[#C2410C] text-white rounded-full uppercase tracking-widest">
-            Subclase 1A • Profundización &amp; Analogías
-          </span>
-          <span className="text-xs text-[#8C8882] font-mono">
-            {item.cormenChapter}
-          </span>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold px-3 py-1 bg-[#C2410C] text-white rounded-full uppercase tracking-widest">
+              Subclase 1A • Profundización &amp; Analogías
+            </span>
+            <span className="text-xs text-[#8C8882] font-mono">
+              {item.cormenChapter}
+            </span>
+          </div>
+
+          <ExportSummaryButton
+            payload={{
+              title: `Profundización 1A: ${deepeningData.title}`,
+              categoryOrCourse: 'Subclase 1A - Algorítmica CLRS',
+              cormenRef: item.cormenChapter,
+              topicSummary: deepeningData.subtitle,
+              theoryContent: deepeningData.moreTopicsContent,
+              analogies: deepeningData.analogies,
+            }}
+          />
         </div>
 
         <h2 className="text-2xl sm:text-4xl font-serif text-[#1A1A1A] font-bold">

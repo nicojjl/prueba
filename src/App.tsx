@@ -13,11 +13,103 @@ import { ExercisePlayground } from './components/ExercisePlayground';
 import { DashboardView } from './components/DashboardView';
 import { CCourseView } from './components/CCourseView';
 import { AlgorithmVisualizerView } from './components/AlgorithmVisualizerView';
-import { BookOpen, Code, LayoutDashboard, Terminal, Zap } from 'lucide-react';
+import { LeaderboardView } from './components/LeaderboardView';
+import { UserProfile } from './types';
+import { calculateUserXP, getLevelInfo, checkAndUpateStreak } from './utils/gamification';
+import { decodeShareCode, SharedCodePayload } from './utils/codeSharing';
+import { SharedCodeNotificationModal } from './components/SharedCodeNotificationModal';
+import { BookOpen, Code, LayoutDashboard, Terminal, Zap, Share2 } from 'lucide-react';
 
 export default function App() {
-  const [viewMode, setViewMode] = useState<'dashboard' | 'class' | 'c_course' | 'visualizer'>('dashboard');
+  const [viewMode, setViewMode] = useState<'dashboard' | 'class' | 'c_course' | 'visualizer' | 'leaderboard'>('dashboard');
   const [selectedItemId, setSelectedItemId] = useState<string>('clase-1');
+
+  // User Gamification Profile State
+  const [userProfile, setUserProfile] = useState<UserProfile>(() => {
+    try {
+      const saved = localStorage.getItem('algo_user_profile');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      // fallback
+    }
+    return {
+      nickname: 'Estudiante Algorítmico',
+      university: 'U. de Chile',
+      avatar: '🧙‍♂️',
+      customTitle: 'Iniciando en C',
+      lastVisitDate: '',
+      streakDays: 1,
+    };
+  });
+
+  // Check and update study streak on mount
+  useEffect(() => {
+    const updatedProfile = checkAndUpateStreak(userProfile);
+    if (
+      updatedProfile.streakDays !== userProfile.streakDays ||
+      updatedProfile.lastVisitDate !== userProfile.lastVisitDate
+    ) {
+      setUserProfile(updatedProfile);
+    }
+  }, []);
+
+  // Save profile state to localStorage
+  useEffect(() => {
+    localStorage.setItem('algo_user_profile', JSON.stringify(userProfile));
+  }, [userProfile]);
+
+  // Code Sharing State & Hash Detection
+  const [incomingSharePayload, setIncomingSharePayload] = useState<SharedCodePayload | null>(null);
+  const [importedExercise, setImportedExercise] = useState<Exercise | null>(null);
+
+  useEffect(() => {
+    const checkShareUrl = () => {
+      const hash = window.location.hash;
+      const search = window.location.search;
+      const decoded = decodeShareCode(hash || search);
+      if (decoded) {
+        setIncomingSharePayload(decoded);
+      }
+    };
+
+    checkShareUrl();
+    window.addEventListener('hashchange', checkShareUrl);
+    return () => window.removeEventListener('hashchange', checkShareUrl);
+  }, []);
+
+  const handleAcceptSharedCode = (code: string) => {
+    const exTitle = incomingSharePayload?.title || 'Código Compartido por Compañero';
+    const sharedEx: Exercise = {
+      id: 'shared-link-exercise',
+      title: exTitle,
+      description: `Código C recibido a través de un enlace hash compartido. Puedes modificarlo, probar algoritmos y compilarlo en vivo.`,
+      initialCode: code,
+      cormenRef: 'Solución Compartida',
+      solutionCode: code,
+      explanation: 'Solución de C recibida mediante código comprimido en enlace URL.',
+      hint: 'Utiliza el editor interactivo C99 y presiona "Compilar & Validar" para ejecutar.',
+      testCases: [
+        {
+          id: 'tc-shared-1',
+          description: 'Ejecución libre del programa C compartido',
+          input: '',
+          expectedOutput: '',
+        },
+      ],
+    };
+
+    setImportedExercise(sharedEx);
+    setIncomingSharePayload(null);
+    setSelectedItemId('clase-1');
+    setActiveTab('exercises');
+    setViewMode('class');
+
+    try {
+      window.history.replaceState(null, '', window.location.pathname);
+    } catch (e) {
+      // ignore
+    }
+  };
 
   const [completedItemIds, setCompletedItemIds] = useState<string[]>(() => {
     try {
@@ -123,6 +215,14 @@ export default function App() {
     setViewMode('class');
   };
 
+  const userXP = calculateUserXP(
+    completedItemIds,
+    solvedExerciseIds,
+    completedCSubtopics,
+    userProfile.streakDays
+  );
+  const levelInfo = getLevelInfo(userXP);
+
   return (
     <div className="h-screen max-h-screen bg-[#F9F8F6] text-[#1A1A1A] flex flex-col font-sans selection:bg-[#C2410C] selection:text-white overflow-hidden">
       {/* Top Header */}
@@ -131,6 +231,11 @@ export default function App() {
         totalCount={COURSES_DATA.length}
         onOpenDashboard={() => setViewMode('dashboard')}
         isDashboardActive={viewMode === 'dashboard'}
+        userXP={userXP}
+        userLevel={levelInfo.level}
+        streakDays={userProfile.streakDays}
+        onOpenLeaderboard={() => setViewMode('leaderboard')}
+        isLeaderboardActive={viewMode === 'leaderboard'}
       />
 
       {/* Main Workspace Layout */}
@@ -146,6 +251,8 @@ export default function App() {
             onOpenCCourse={() => setViewMode('c_course')}
             isVisualizerActive={viewMode === 'visualizer'}
             onOpenVisualizer={() => setViewMode('visualizer')}
+            isLeaderboardActive={viewMode === 'leaderboard'}
+            onOpenLeaderboard={() => setViewMode('leaderboard')}
             isAlgoCourseActive={viewMode === 'class'}
             onOpenAlgoCourse={() => setViewMode('class')}
             selectedCChapterId={selectedCChapterId}
@@ -225,7 +332,15 @@ export default function App() {
 
           {/* Active View Display */}
           <div className="flex-1 overflow-y-auto flex flex-col">
-            {viewMode === 'visualizer' ? (
+            {viewMode === 'leaderboard' ? (
+              <LeaderboardView
+                completedItemIds={completedItemIds}
+                solvedExerciseIds={solvedExerciseIds}
+                completedCSubtopics={completedCSubtopics}
+                userProfile={userProfile}
+                onUpdateProfile={(updated) => setUserProfile(updated)}
+              />
+            ) : viewMode === 'visualizer' ? (
               <AlgorithmVisualizerView />
             ) : viewMode === 'dashboard' ? (
               <DashboardView
@@ -241,6 +356,10 @@ export default function App() {
                   setSelectedItemId('clase-1');
                   setViewMode('class');
                 }}
+                onOpenLeaderboard={() => setViewMode('leaderboard')}
+                userXP={userXP}
+                userLevel={levelInfo.level}
+                streakDays={userProfile.streakDays}
               />
             ) : viewMode === 'c_course' ? (
               <CCourseView
@@ -258,10 +377,16 @@ export default function App() {
                 onToggleCompleted={() => handleToggleCompleted(currentItem.id)}
                 onOpenExercise={() => setActiveTab('exercises')}
               />
-            ) : currentExercises.length > 0 ? (
+            ) : (
               <div className="p-4 sm:p-6 lg:p-8 flex-1">
                 <ExercisePlayground
-                  exercises={currentExercises}
+                  exercises={
+                    importedExercise
+                      ? [importedExercise, ...currentExercises]
+                      : currentExercises.length > 0
+                      ? currentExercises
+                      : []
+                  }
                   onSolved={(exerciseId) => {
                     if (!solvedExerciseIds.includes(exerciseId)) {
                       setSolvedExerciseIds((prev) => [...prev, exerciseId]);
@@ -269,10 +394,17 @@ export default function App() {
                   }}
                 />
               </div>
-            ) : null}
+            )}
           </div>
         </main>
       </div>
+
+      {/* Shared Code Notification Modal */}
+      <SharedCodeNotificationModal
+        payload={incomingSharePayload}
+        onAccept={handleAcceptSharedCode}
+        onDismiss={() => setIncomingSharePayload(null)}
+      />
     </div>
   );
 }

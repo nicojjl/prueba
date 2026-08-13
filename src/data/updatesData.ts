@@ -12,13 +12,59 @@ export interface AppUpdate {
 
 export const APP_UPDATES: AppUpdate[] = [
   {
+    id: 'update-v2.9',
+    version: 'v2.9',
+    date: '13 de Agosto, 2026',
+    title: 'Exportador de Resúmenes en PDF y Markdown (.md)',
+    badge: 'Estudio & Exámenes',
+    badgeColor: 'purple',
+    isLatest: true,
+    description: 'Descarga fichas de repaso completas con teoría, pseudocódigo Cormen (CLRS), análisis Big-O y preguntas de autoevaluación para estudiar antes de tus pruebas.',
+    highlights: [
+      'Exportación en Markdown (.md): Genera archivos Markdown limpios estructurados para Obsidian, Notion o VS Code.',
+      'Impresión y Guardar como PDF (.pdf): Formateo listo para impresión con membrete oficial CLRS, fuentes serif elegantes y bloques de código legibles.',
+      'Filtro de Contenido Personalizable: Escoge si deseas incluir teoría, pseudocódigo C, tablas Big-O, analogías o cuestionarios de autoevaluación.'
+    ]
+  },
+  {
+    id: 'update-v2.8',
+    version: 'v2.8',
+    date: '13 de Agosto, 2026',
+    title: 'Compartir Soluciones por Enlace (URL Hash & Share Code)',
+    badge: 'Colaboración & IDE',
+    badgeColor: 'blue',
+    isLatest: false,
+    description: 'Genera enlaces directos codificados para enviar soluciones de C y algoritmos a tus compañeros por WhatsApp o Discord.',
+    highlights: [
+      'Generador de Enlaces Hash Base64: Botón "Compartir" en el playground de código que comprime tu solución C en un enlace único.',
+      'Acciones Rápidas para Redes: Un solo clic para enviar por WhatsApp o copiar el bloque Markdown formateado para Discord y Telegram.',
+      'Auto-Carga al Abrir Enlace: Al abrir un enlace compartido (#share=...), la plataforma detecta el código y muestra un modal interactivo para cargarlo y compilarlo en vivo.'
+    ]
+  },
+  {
+    id: 'update-v2.7',
+    version: 'v2.7',
+    date: '13 de Agosto, 2026',
+    title: 'Puntajes, Logros Compartidos y Ránking de Estudiantes (Leaderboard)',
+    badge: 'Gamificación & Social',
+    badgeColor: 'orange',
+    isLatest: false,
+    description: 'Llegó el sistema de gamificación para estudiar en comunidad con tus amigos y compañeros de universidad.',
+    highlights: [
+      'Sistema de Puntos de Experiencia (XP): Gana XP resolviendo ejercicios de C, completando lecciones de algoritmos y manteniendo tu racha diaria.',
+      'Tabla de Clasificación (Leaderboard): Mídete con compañeros de distintas universidades (U. de Chile, UTFSM, PUC, U. de Valparaíso) y filtra por Ránking Global, Mi Universidad o Rachas.',
+      'Perfiles de Estudiante Personalizables: Elige tu apodo, universidad y avatar (🧙‍♂️ Hechicero de C, 🐱‍💻 Gato Coder, 🥷 Ninja Asintótico, etc.).',
+      'Insignias y Compartición Social: Desbloquea logros (Erudito Cormen, Dominio C, Racha Implacable) y comparte tu ficha de ránking con un solo clic en WhatsApp/Discord.'
+    ]
+  },
+  {
     id: 'update-v2.6',
     version: 'v2.6',
     date: '13 de Agosto, 2026',
     title: 'Optimizaciones de Navegación, Sismología y Datos Personalizados',
     badge: 'Mantenimiento & UX',
     badgeColor: 'purple',
-    isLatest: true,
+    isLatest: false,
     description: 'Nuevas mejoras en la experiencia de usuario, navegación directa a cursos, telemetría sísmica estricta para Chile y optimizaciones del motor de simulación de algoritmos.',
     highlights: [
       'Navegación Corregida: El botón "Curso Algorítmica (CLRS)" del menú lateral ahora redirige directamente a las lecciones del curso, y se agregó el botón "Volver al Menú Principal".',

@@ -4,7 +4,7 @@ import { APP_UPDATES, AppUpdate } from '../data/updatesData';
 import { motion, AnimatePresence } from 'motion/react';
 
 export const UpdatesSection: React.FC = () => {
-  const [expandedId, setExpandedId] = useState<string>('update-v2.6');
+  const [expandedId, setExpandedId] = useState<string>('update-v2.9');
 
   const toggleExpand = (id: string) => {
     setExpandedId((prev) => (prev === id ? '' : id));
@@ -39,7 +39,7 @@ export const UpdatesSection: React.FC = () => {
 
         <div className="text-right text-xs text-[#8C8882] font-mono">
           <span>Versión Actual: </span>
-          <strong className="text-[#C2410C] font-bold">v2.6 (13 Ago 2026)</strong>
+          <strong className="text-[#C2410C] font-bold">v2.9 (13 Ago 2026)</strong>
         </div>
       </div>
 

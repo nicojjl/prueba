@@ -1,6 +1,6 @@
 import React from 'react';
 import { CourseItem, Exercise } from '../types';
-import { Zap, Terminal, GraduationCap, ArrowRight, Sparkles } from 'lucide-react';
+import { Zap, Terminal, GraduationCap, ArrowRight, Sparkles, Trophy, Flame, Award } from 'lucide-react';
 import { motion } from 'motion/react';
 import { UpdatesSection } from './UpdatesSection';
 import { LiveTelemetryWidget } from './LiveTelemetryWidget';
@@ -15,6 +15,10 @@ interface DashboardViewProps {
   onOpenVisualizer?: () => void;
   onOpenCCourse?: () => void;
   onOpenAlgoCourse?: () => void;
+  onOpenLeaderboard?: () => void;
+  userXP?: number;
+  userLevel?: number;
+  streakDays?: number;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -24,6 +28,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onOpenVisualizer,
   onOpenCCourse,
   onOpenAlgoCourse,
+  onOpenLeaderboard,
+  userXP = 0,
+  userLevel = 1,
+  streakDays = 1,
 }) => {
   // Stats calculation
   const totalClasses = courses.length;
@@ -49,13 +57,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </p>
         </div>
 
-        {/* 3 Main Entry Tiles / Viñetas Centradas */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* 4 Main Entry Tiles / Viñetas Centradas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* TILE 1: ALGORITMOS */}
           <motion.div
             whileHover={{ y: -6, transition: { duration: 0.2 } }}
             onClick={() => onOpenVisualizer && onOpenVisualizer()}
-            className="bg-white border-2 border-[#E5E2DE] hover:border-[#C2410C] rounded-3xl p-7 shadow-xs hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between group space-y-5 relative overflow-hidden"
+            className="bg-white border-2 border-[#E5E2DE] hover:border-[#C2410C] rounded-3xl p-6 shadow-xs hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between group space-y-5 relative overflow-hidden"
           >
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-2xl bg-[#ECFDF5] border border-[#6EE7B7] flex items-center justify-center text-[#10B981] group-hover:scale-110 transition-transform">
@@ -64,13 +72,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
               <div className="space-y-2">
                 <span className="text-[10px] font-mono font-bold text-[#10B981] bg-[#ECFDF5] px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#6EE7B7]/50 inline-block">
-                  Simulaciones en Tiempo Real
+                  Simulaciones en Vivo
                 </span>
-                <h2 className="text-2xl font-serif font-bold text-[#1A1A1A] group-hover:text-[#C2410C] transition-colors">
+                <h2 className="text-xl font-serif font-bold text-[#1A1A1A] group-hover:text-[#C2410C] transition-colors">
                   Algoritmos
                 </h2>
                 <p className="text-xs text-[#4A4742] leading-relaxed">
-                  Visualizador interactivo con 14 algoritmos clásicos (Sorting, Grafos, DP, Punteros), pseudocódigo CLRS sincronizado y editor ejecutable en C, C++ y Python.
+                  14 Algoritmos interactivos paso a paso, pseudocódigo CLRS e inspector de variables.
                 </p>
               </div>
             </div>
@@ -78,7 +86,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <div className="pt-4 border-t border-[#F2F1EE] flex items-center justify-between text-xs font-bold text-[#C2410C] group-hover:translate-x-1 transition-transform">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
-                14 Algoritmos Paso a Paso
+                14 Algoritmos
               </span>
               <ArrowRight className="w-4 h-4" />
             </div>
@@ -88,7 +96,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <motion.div
             whileHover={{ y: -6, transition: { duration: 0.2 } }}
             onClick={() => onOpenCCourse && onOpenCCourse()}
-            className="bg-white border-2 border-[#E5E2DE] hover:border-[#C2410C] rounded-3xl p-7 shadow-xs hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between group space-y-5 relative overflow-hidden"
+            className="bg-white border-2 border-[#E5E2DE] hover:border-[#C2410C] rounded-3xl p-6 shadow-xs hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between group space-y-5 relative overflow-hidden"
           >
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-2xl bg-[#FFF7ED] border border-[#FDBA74] flex items-center justify-center text-[#C2410C] group-hover:scale-110 transition-transform">
@@ -97,19 +105,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
               <div className="space-y-2">
                 <span className="text-[10px] font-mono font-bold text-[#C2410C] bg-[#FFF7ED] px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#FDBA74]/50 inline-block">
-                  Estándar Kernighan &amp; Ritchie
+                  Estándar K&amp;R
                 </span>
-                <h2 className="text-2xl font-serif font-bold text-[#1A1A1A] group-hover:text-[#C2410C] transition-colors">
+                <h2 className="text-xl font-serif font-bold text-[#1A1A1A] group-hover:text-[#C2410C] transition-colors">
                   Curso C Pro
                 </h2>
                 <p className="text-xs text-[#4A4742] leading-relaxed">
-                  Aprende C moderno desde nivel inicial hasta profesional: sintaxis, tipos de datos, aritmética de punteros, gestión dinámica de memoria Heap y llamadas al sistema.
+                  8 Capítulos integrales desde sintaxis básica hasta aritmética de punteros y Heap.
                 </p>
               </div>
             </div>
 
             <div className="pt-4 border-t border-[#F2F1EE] flex items-center justify-between text-xs font-bold text-[#C2410C] group-hover:translate-x-1 transition-transform">
-              <span>8 Capítulos Integrales</span>
+              <span>8 Capítulos K&amp;R</span>
               <ArrowRight className="w-4 h-4" />
             </div>
           </motion.div>
@@ -121,7 +129,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               if (onOpenAlgoCourse) onOpenAlgoCourse();
               else onSelectClass('clase-1', 'theory');
             }}
-            className="bg-white border-2 border-[#E5E2DE] hover:border-[#C2410C] rounded-3xl p-7 shadow-xs hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between group space-y-5 relative overflow-hidden"
+            className="bg-white border-2 border-[#E5E2DE] hover:border-[#C2410C] rounded-3xl p-6 shadow-xs hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between group space-y-5 relative overflow-hidden"
           >
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-2xl bg-[#F9F8F6] border border-[#E5E2DE] flex items-center justify-center text-[#1A1A1A] group-hover:scale-110 transition-transform">
@@ -130,19 +138,53 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
               <div className="space-y-2">
                 <span className="text-[10px] font-mono font-bold text-[#1A1A1A] bg-[#F2F1EE] px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#E5E2DE] inline-block">
-                  Cormen (CLRS) C Edition
+                  Cormen CLRS
                 </span>
-                <h2 className="text-2xl font-serif font-bold text-[#1A1A1A] group-hover:text-[#C2410C] transition-colors">
-                  Algorítmica y Complejidad
+                <h2 className="text-xl font-serif font-bold text-[#1A1A1A] group-hover:text-[#C2410C] transition-colors">
+                  Algorítmica CLRS
                 </h2>
                 <p className="text-xs text-[#4A4742] leading-relaxed">
-                  Curso estructurado de 16 clases y talleres, análisis asintótico Big-O, verificación formal de algoritmos y banco de 95 ejercicios en C.
+                  16 Clases teóricas, análisis asintótico Big-O y banco de 95 ejercicios prácticos.
                 </p>
               </div>
             </div>
 
             <div className="pt-4 border-t border-[#F2F1EE] flex items-center justify-between text-xs font-bold text-[#C2410C] group-hover:translate-x-1 transition-transform">
-              <span>16 Clases • {completedClassesCount}/{totalClasses} Completadas</span>
+              <span>{completedClassesCount}/{totalClasses} Completadas</span>
+              <ArrowRight className="w-4 h-4" />
+            </div>
+          </motion.div>
+
+          {/* TILE 4: LEADERBOARD & XP LOGROS */}
+          <motion.div
+            whileHover={{ y: -6, transition: { duration: 0.2 } }}
+            onClick={() => onOpenLeaderboard && onOpenLeaderboard()}
+            className="bg-[#FFF7ED]/60 border-2 border-[#FDBA74] hover:border-[#C2410C] rounded-3xl p-6 shadow-xs hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between group space-y-5 relative overflow-hidden"
+          >
+            <div className="space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#1A1A1A] border border-[#33312E] flex items-center justify-center text-[#FDBA74] group-hover:scale-110 transition-transform shadow-xs">
+                <Trophy className="w-6 h-6" />
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-[10px] font-mono font-bold text-[#C2410C] bg-white px-2.5 py-1 rounded-full uppercase tracking-wider border border-[#FDBA74] inline-flex items-center gap-1">
+                  <Flame className="w-3 h-3 text-[#EF4444] fill-current" />
+                  Racha: {streakDays}d • Lvl {userLevel}
+                </span>
+                <h2 className="text-xl font-serif font-bold text-[#1A1A1A] group-hover:text-[#C2410C] transition-colors">
+                  Ránking &amp; Logros
+                </h2>
+                <p className="text-xs text-[#4A4742] leading-relaxed">
+                  Compite en la tabla de clasificación de estudiantes con tus puntos XP ({userXP} XP) e insignias.
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-[#FDBA74]/50 flex items-center justify-between text-xs font-bold text-[#C2410C] group-hover:translate-x-1 transition-transform">
+              <span className="flex items-center gap-1 font-mono">
+                <Award className="w-4 h-4 text-[#C2410C]" />
+                Ver Clasificación
+              </span>
               <ArrowRight className="w-4 h-4" />
             </div>
           </motion.div>

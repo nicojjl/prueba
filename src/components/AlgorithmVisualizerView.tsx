@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import { CSyntaxHighlighter } from './CSyntaxHighlighter';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { ExportSummaryButton } from './ExportSummaryButton';
 
 interface AlgorithmVisualizerViewProps {
   onSelectAlgorithm?: (algoId: string) => void;
@@ -461,8 +462,28 @@ export const AlgorithmVisualizerView: React.FC<AlgorithmVisualizerViewProps> = (
           </span>
         </div>
 
-        <div className="text-xs text-[#8C8882] font-mono hidden sm:block">
-          Capítulo: <strong className="text-[#C2410C]">{selectedAlgo.cormenChapter || 'CLRS Cormen'}</strong>
+        <div className="flex items-center gap-3">
+          <div className="text-xs text-[#8C8882] font-mono hidden sm:block">
+            Capítulo: <strong className="text-[#C2410C]">{selectedAlgo.cormenChapter || 'CLRS Cormen'}</strong>
+          </div>
+
+          <ExportSummaryButton
+            payload={{
+              title: `${selectedAlgo.name}`,
+              categoryOrCourse: `Algorítmica & Visualizador - ${selectedAlgo.categoryLabel}`,
+              cormenRef: selectedAlgo.cormenChapter || 'Cormen CLRS Edition',
+              topicSummary: selectedAlgo.subtitle,
+              theoryContent: selectedAlgo.explanationMarkdown,
+              codeExampleC: selectedAlgo.codeImplementations?.c,
+              complexity: selectedAlgo.complexity,
+              analogies: selectedAlgo.analogy ? [{
+                title: selectedAlgo.analogy.title,
+                concept: selectedAlgo.name,
+                analogy: selectedAlgo.analogy.description,
+                whyItWorks: selectedAlgo.analogy.realLifeExample,
+              }] : undefined,
+            }}
+          />
         </div>
       </div>
 

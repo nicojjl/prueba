@@ -1,18 +1,27 @@
 import React from 'react';
-import { BookOpen, CheckCircle2, Award } from 'lucide-react';
+import { BookOpen, CheckCircle2, Award, Trophy, Flame, Zap } from 'lucide-react';
 
 interface HeaderProps {
   completedCount: number;
   totalCount: number;
   onOpenDashboard?: () => void;
   isDashboardActive?: boolean;
+  userXP?: number;
+  userLevel?: number;
+  streakDays?: number;
+  onOpenLeaderboard?: () => void;
+  isLeaderboardActive?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   completedCount,
   totalCount,
   onOpenDashboard,
-  isDashboardActive
+  userXP = 0,
+  userLevel = 1,
+  streakDays = 1,
+  onOpenLeaderboard,
+  isLeaderboardActive = false,
 }) => {
   const progressPercent = Math.round((completedCount / totalCount) * 100);
 
@@ -41,14 +50,43 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col items-end min-w-[160px]">
+        {/* Right Section: XP/Leaderboard Button & Progress Bar */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* Leaderboard Button */}
+          {onOpenLeaderboard && (
+            <button
+              onClick={onOpenLeaderboard}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-xs font-bold transition shadow-xs ${
+                isLeaderboardActive
+                  ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
+                  : 'bg-[#FFF7ED] hover:bg-[#FFEAD5] text-[#C2410C] border-[#FDBA74]'
+              }`}
+              title="Ver Tabla de Clasificación, Racha y Logros"
+            >
+              <Trophy className="w-4 h-4 text-[#FDBA74]" />
+              <div className="flex items-center gap-1.5 font-mono">
+                <span>Lvl {userLevel}</span>
+                <span className="text-[#D5D2CE]">•</span>
+                <span className="flex items-center gap-0.5 text-[#C2410C]">
+                  <Zap className="w-3 h-3 fill-current" />
+                  {userXP} XP
+                </span>
+                <span className="text-[#D5D2CE] hidden md:inline">•</span>
+                <span className="hidden md:flex items-center gap-0.5 text-[#EF4444]">
+                  <Flame className="w-3 h-3 fill-current" />
+                  {streakDays}d
+                </span>
+              </div>
+            </button>
+          )}
+
+          {/* Progress Bar */}
+          <div className="hidden sm:flex flex-col items-end min-w-[140px]">
             <div className="flex items-center gap-1.5 text-xs text-[#4A4742] font-semibold mb-1">
               <CheckCircle2 className="w-4 h-4 text-[#C2410C]" />
-              <span>Progreso: {completedCount}/{totalCount} ({progressPercent}%)</span>
+              <span>{completedCount}/{totalCount} ({progressPercent}%)</span>
             </div>
-            <div className="w-40 h-2 bg-[#E5E2DE] rounded-full overflow-hidden p-0.5 border border-[#D5D2CE]">
+            <div className="w-36 h-2 bg-[#E5E2DE] rounded-full overflow-hidden p-0.5 border border-[#D5D2CE]">
               <div
                 className="h-full bg-gradient-to-r from-[#C2410C] to-[#EA580C] transition-all duration-500 rounded-full"
                 style={{ width: `${progressPercent}%` }}
@@ -57,7 +95,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {completedCount === totalCount && (
-            <span className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-[#ECFDF5] border border-[#10B981] text-[#065F46] rounded-full text-xs font-bold uppercase tracking-wider">
+            <span className="hidden xl:flex items-center gap-1.5 px-3 py-1 bg-[#ECFDF5] border border-[#10B981] text-[#065F46] rounded-full text-xs font-bold uppercase tracking-wider">
               <Award className="w-4 h-4 text-[#10B981]" />
               <span>Completado</span>
             </span>
@@ -67,4 +105,5 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+
 

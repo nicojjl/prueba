@@ -30,6 +30,7 @@ import { motion } from 'motion/react';
 import { CCourseCap1Animation1 } from './animations/CCourseCap1Animation1';
 import { CCourseCap1Animation2 } from './animations/CCourseCap1Animation2';
 import { ExercisePlayground } from './ExercisePlayground';
+import { ExportSummaryButton } from './ExportSummaryButton';
 
 interface CCourseViewProps {
   completedSubtopics: string[]; // array of completed chapter or subtopic ids
@@ -258,17 +259,31 @@ export const CCourseView: React.FC<CCourseViewProps> = ({
             </p>
           </div>
 
-          <button
-            onClick={() => onToggleSubtopicCompleted(currentChapter.id)}
-            className={`px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs ${
-              isChapterCompleted
-                ? 'bg-[#ECFDF5] text-[#10B981] border border-[#10B981]'
-                : 'bg-[#1A1A1A] hover:bg-[#333333] text-white'
-            }`}
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>{isChapterCompleted ? 'Capítulo Completado ✓' : 'Marcar Capítulo Completado'}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <ExportSummaryButton
+              payload={{
+                title: `Capítulo ${currentChapter.chapterNumber}: ${currentChapter.title}`,
+                categoryOrCourse: 'Curso C Pro (Kernighan & Ritchie Standard)',
+                cormenRef: `K&R C Standard • Cap. ${currentChapter.chapterNumber}`,
+                topicSummary: currentChapter.subtitle,
+                theoryContent: currentChapter.theoryContent,
+                codeExampleC: currentChapter.codeExamples?.[0]?.code,
+                analogies: currentChapter.analogies,
+              }}
+            />
+
+            <button
+              onClick={() => onToggleSubtopicCompleted(currentChapter.id)}
+              className={`px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs ${
+                isChapterCompleted
+                  ? 'bg-[#ECFDF5] text-[#10B981] border border-[#10B981]'
+                  : 'bg-[#1A1A1A] hover:bg-[#333333] text-white'
+              }`}
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              <span>{isChapterCompleted ? 'Capítulo Completado ✓' : 'Marcar Capítulo Completado'}</span>
+            </button>
+          </div>
         </div>
 
         {/* Key Concepts Pills */}

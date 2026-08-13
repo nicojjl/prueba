@@ -10,7 +10,8 @@ import {
   LayoutDashboard,
   Terminal,
   Code,
-  GraduationCap
+  GraduationCap,
+  Trophy
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -24,6 +25,8 @@ interface SidebarProps {
   onOpenCCourse: () => void;
   isVisualizerActive: boolean;
   onOpenVisualizer: () => void;
+  isLeaderboardActive?: boolean;
+  onOpenLeaderboard?: () => void;
   isAlgoCourseActive?: boolean;
   onOpenAlgoCourse?: () => void;
   selectedCChapterId?: string;
@@ -42,6 +45,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenCCourse,
   isVisualizerActive,
   onOpenVisualizer,
+  isLeaderboardActive = false,
+  onOpenLeaderboard,
   isAlgoCourseActive = false,
   onOpenAlgoCourse,
   selectedCChapterId = 'cap-1',
@@ -61,6 +66,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <LayoutDashboard className="w-4 h-4 text-[#C2410C]" />
           <span>Volver al Menú Principal</span>
         </button>
+
+        {/* Tabla de Clasificación & Logros */}
+        {onOpenLeaderboard && (
+          <button
+            onClick={onOpenLeaderboard}
+            className={`w-full p-2.5 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+              isLeaderboardActive
+                ? 'bg-[#1A1A1A] text-white border-[#1A1A1A] shadow-xs'
+                : 'bg-[#FFF7ED] hover:bg-[#FFEAD5] border-[#FDBA74] text-[#C2410C]'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <div className={`p-1.5 rounded-lg ${isLeaderboardActive ? 'bg-white text-[#1A1A1A]' : 'bg-[#C2410C] text-white'}`}>
+                <Trophy className="w-4 h-4" />
+              </div>
+              <div className="text-left">
+                <span className="text-xs font-serif font-bold block leading-tight">
+                  Ránking &amp; Logros
+                </span>
+                <span className={`text-[10px] font-mono block ${isLeaderboardActive ? 'text-white/90' : 'text-[#C2410C]'}`}>
+                  Tabla de Posiciones
+                </span>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 opacity-60" />
+          </button>
+        )}
 
         <button
           onClick={onOpenVisualizer}

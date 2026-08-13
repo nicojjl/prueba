@@ -18,10 +18,12 @@ import {
   CornerDownLeft,
   FileCode,
   Zap,
+  Share2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { CSyntaxHighlighter } from './CSyntaxHighlighter';
+import { ShareCodeModal } from './ShareCodeModal';
 
 interface ExercisePlaygroundProps {
   exercise?: Exercise;
@@ -261,6 +263,7 @@ export const ExercisePlayground: React.FC<ExercisePlaygroundProps> = ({
   const [showHint, setShowHint] = useState<boolean>(false);
   const [showSolution, setShowSolution] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
   const [terminalTab, setTerminalTab] = useState<'console' | 'tests'>('console');
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -654,6 +657,15 @@ export const ExercisePlayground: React.FC<ExercisePlaygroundProps> = ({
 
               <div className="flex items-center gap-2 text-[11px]">
                 <button
+                  onClick={() => setIsShareModalOpen(true)}
+                  className="px-2.5 py-1 bg-[#C2410C] hover:bg-[#9A3412] text-white font-bold rounded transition flex items-center gap-1 shadow-2xs"
+                  title="Generar enlace o código de solución para compartir por WhatsApp / Discord"
+                >
+                  <Share2 className="w-3 h-3" />
+                  <span>Compartir</span>
+                </button>
+
+                <button
                   onClick={handleFormatCode}
                   className="px-2.5 py-1 bg-[#1E1E2E] hover:bg-[#313244] text-[#CBA6F7] rounded transition flex items-center gap-1"
                   title="Auto-identar código C"
@@ -848,6 +860,15 @@ export const ExercisePlayground: React.FC<ExercisePlaygroundProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Share Solution Modal */}
+      <ShareCodeModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        code={code}
+        title={activeExercise?.title || 'Solución C'}
+        exerciseId={activeExercise?.id}
+      />
     </motion.div>
   );
 };

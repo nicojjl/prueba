@@ -29,6 +29,8 @@ import { SubclassDeepeningView } from './SubclassDeepeningView';
 import { SubclassPracticeView } from './SubclassPracticeView';
 import { AlgoClass1Animation1 } from './animations/AlgoClass1Animation1';
 import { AlgoClass1Animation2 } from './animations/AlgoClass1Animation2';
+import { ExportSummaryButton } from './ExportSummaryButton';
+import { SummaryExportPayload } from '../utils/exportSummary';
 
 interface ClassViewProps {
   item: CourseItem;
@@ -136,17 +138,31 @@ export const ClassView: React.FC<ClassViewProps> = ({
           </button>
         </div>
 
-        <button
-          onClick={onToggleCompleted}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition shrink-0 ${
-            isCompleted
-              ? 'bg-[#ECFDF5] border-[#10B981] text-[#065F46]'
-              : 'bg-white hover:bg-[#F2F1EE] border-[#E5E2DE] text-[#4A4742]'
-          }`}
-        >
-          <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-[#10B981]' : 'text-[#8C8882]'}`} />
-          <span>{isCompleted ? 'Completada ✓' : 'Marcar Completada'}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <ExportSummaryButton
+            payload={{
+              title: `${item.type === 'workshop' ? 'Taller' : `Clase ${item.number}`}: ${item.title}`,
+              categoryOrCourse: 'Curso Algorítmica y Complejidad CLRS',
+              cormenRef: item.cormenChapter,
+              topicSummary: item.topic || item.summary,
+              theoryContent: item.theoryContent,
+              analogies: deepening?.analogies,
+              checkQuestions: item.checkQuestions,
+            }}
+          />
+
+          <button
+            onClick={onToggleCompleted}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition shrink-0 ${
+              isCompleted
+                ? 'bg-[#ECFDF5] border-[#10B981] text-[#065F46]'
+                : 'bg-white hover:bg-[#F2F1EE] border-[#E5E2DE] text-[#4A4742]'
+            }`}
+          >
+            <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-[#10B981]' : 'text-[#8C8882]'}`} />
+            <span>{isCompleted ? 'Completada ✓' : 'Marcar Completada'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Subclass 1A: Deepening View */}
