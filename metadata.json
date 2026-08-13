@@ -1,0 +1,6 @@
+{
+  "name": "Algorítmica y Complejidad",
+  "description": "Plataforma interactiva de aprendizaje de Algorítmica y Complejidad (Cormen) con clases, talleres, ejercicios interactivos, simuladores y Mentor IA.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
