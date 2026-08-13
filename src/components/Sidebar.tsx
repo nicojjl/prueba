@@ -21,6 +21,8 @@ interface SidebarProps {
   onOpenDashboard: () => void;
   isCCourseActive: boolean;
   onOpenCCourse: () => void;
+  isVisualizerActive: boolean;
+  onOpenVisualizer: () => void;
   selectedCChapterId?: string;
   onSelectCChapter?: (chapterId: string) => void;
   completedCSubtopics?: string[]; // IDs of completed C chapters
@@ -35,6 +37,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenDashboard,
   isCCourseActive,
   onOpenCCourse,
+  isVisualizerActive,
+  onOpenVisualizer,
   selectedCChapterId = 'cap-1',
   onSelectCChapter,
   completedCSubtopics = [],
@@ -44,23 +48,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Top Navigation Switcher */}
       <div className="p-3 sm:p-4 border-b border-[#E5E2DE] bg-white shrink-0 space-y-2">
         <button
-          onClick={onOpenDashboard}
+          onClick={onOpenVisualizer}
           className={`w-full p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3 ${
-            isDashboardActive
-              ? 'bg-[#1A1A1A] text-white border-[#1A1A1A] shadow-xs'
-              : 'bg-[#F9F8F6] hover:bg-[#F2F1EE] border-[#E5E2DE] text-[#1A1A1A]'
+            isVisualizerActive
+              ? 'bg-[#10B981] text-white border-[#10B981] shadow-xs'
+              : 'bg-[#ECFDF5] hover:bg-[#D1FAE5] border-[#6EE7B7] text-[#065F46]'
           }`}
         >
           <div className="flex items-center gap-2.5">
-            <div className={`p-2 rounded-lg ${isDashboardActive ? 'bg-[#C2410C] text-white' : 'bg-[#FFF7ED] text-[#C2410C] border border-[#FDBA74]'}`}>
-              <LayoutDashboard className="w-4 h-4" />
+            <div className={`p-2 rounded-lg ${isVisualizerActive ? 'bg-white text-[#10B981]' : 'bg-[#10B981] text-white'}`}>
+              <Code className="w-4 h-4" />
             </div>
             <div className="text-left">
               <span className="text-xs font-serif font-bold block leading-tight">
-                Curso Algorítmica (CLRS)
+                Visualizador de Algoritmos
               </span>
-              <span className={`text-[10px] font-mono block ${isDashboardActive ? 'text-[#FDBA74]' : 'text-[#C2410C]'}`}>
-                16 Clases &amp; 19 Módulos
+              <span className={`text-[10px] font-mono block ${isVisualizerActive ? 'text-white/90' : 'text-[#047857]'}`}>
+                34 Algoritmos Interactivos
               </span>
             </div>
           </div>
@@ -90,12 +94,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <ChevronRight className="w-4 h-4 opacity-60" />
         </button>
+
+        <button
+          onClick={onOpenDashboard}
+          className={`w-full p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+            isDashboardActive
+              ? 'bg-[#1A1A1A] text-white border-[#1A1A1A] shadow-xs'
+              : 'bg-[#F9F8F6] hover:bg-[#F2F1EE] border-[#E5E2DE] text-[#1A1A1A]'
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            <div className={`p-2 rounded-lg ${isDashboardActive ? 'bg-[#C2410C] text-white' : 'bg-[#FFF7ED] text-[#C2410C] border border-[#FDBA74]'}`}>
+              <LayoutDashboard className="w-4 h-4" />
+            </div>
+            <div className="text-left">
+              <span className="text-xs font-serif font-bold block leading-tight">
+                Curso Algorítmica (CLRS)
+              </span>
+              <span className={`text-[10px] font-mono block ${isDashboardActive ? 'text-[#FDBA74]' : 'text-[#C2410C]'}`}>
+                16 Clases &amp; 19 Módulos
+              </span>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 opacity-60" />
+        </button>
       </div>
 
       {/* Course Title Header */}
       <div className="p-3 sm:p-4 border-b border-[#E5E2DE] bg-[#F9F8F6] shrink-0">
         <span className="text-[10px] font-bold uppercase tracking-wider text-[#8C8882] block">
-          {isCCourseActive ? 'Capítulos del Curso Lenguaje C (K&R):' : 'Lecciones de Algorítmica (CLRS):'}
+          {isVisualizerActive ? 'Modo Visualizador de Algoritmos' : isCCourseActive ? 'Capítulos del Curso Lenguaje C (K&R):' : 'Lecciones de Algorítmica (CLRS):'}
         </span>
       </div>
 

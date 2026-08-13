@@ -132,6 +132,78 @@ export interface UserProgress {
   completedItems: string[]; // array of CourseItem ids
   solvedExercises: string[]; // array of Exercise ids
   completedCSubtopics: string[]; // array of CSubTopic ids
+  completedAlgorithms?: string[]; // array of Algorithm ids
   currentItemId: string;
   userNotes: Record<string, string>;
 }
+
+export type AlgoCategory =
+  | 'conceptos'
+  | 'estructuras'
+  | 'ordenamiento'
+  | 'busqueda_grafos'
+  | 'dp_backtracking';
+
+export interface AlgoComplexity {
+  timeBest: string;
+  timeAverage: string;
+  timeWorst: string;
+  spaceWorst: string;
+}
+
+export interface AlgoVisualStep {
+  stepIndex: number;
+  description: string;
+  arrayState?: number[];
+  highlightIndices?: number[];
+  sortedIndices?: number[];
+  swapIndices?: number[];
+  activePointers?: { label: string; index: number; color?: string }[];
+  graphNodes?: { id: string; label: string; state: 'unvisited' | 'visiting' | 'visited' | 'current' | 'path'; distance?: string; x?: number; y?: number }[];
+  graphEdges?: { from: string; to: string; weight?: number; highlighted?: boolean }[];
+  stackQueueState?: { value: string | number; active?: boolean }[];
+  treeNodes?: { id: string; value: number; left?: string; right?: string; state?: 'normal' | 'active' | 'found' | 'inserted'; x?: number; y?: number }[];
+  dpGrid?: { rowLabels: string[]; colLabels: string[]; matrix: (number | string)[][]; activeCell?: [number, number] };
+  codeLine?: number;
+}
+
+export interface AlgorithmItem {
+  id: string;
+  name: string;
+  category: AlgoCategory;
+  categoryLabel: string;
+  subtitle: string;
+  icon: string;
+  difficulty: 'Principiante' | 'Intermedio' | 'Avanzado';
+  complexity: AlgoComplexity;
+  analogy: {
+    title: string;
+    description: string;
+    realLifeExample: string;
+  };
+  explanationMarkdown: string;
+  codeImplementations: {
+    c: string;
+    cpp: string;
+    python: string;
+  };
+  initialVisualData: {
+    defaultArray?: number[];
+    defaultGraphNodes?: { id: string; label: string; x: number; y: number }[];
+    defaultGraphEdges?: { from: string; to: string; weight?: number }[];
+    defaultTreeNodes?: { id: string; value: number; left?: string; right?: string; x: number; y: number }[];
+    defaultParams?: Record<string, any>;
+  };
+  generateSteps: (customInput?: any) => AlgoVisualStep[];
+  exercises: {
+    id: string;
+    title: string;
+    description: string;
+    cCode: string;
+    cppCode: string;
+    pythonCode: string;
+    expectedOutput: string;
+    explanation: string;
+  }[];
+}
+

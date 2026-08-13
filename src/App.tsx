@@ -12,11 +12,13 @@ import { ClassView } from './components/ClassView';
 import { ExercisePlayground } from './components/ExercisePlayground';
 import { DashboardView } from './components/DashboardView';
 import { CCourseView } from './components/CCourseView';
-import { BookOpen, Code, LayoutDashboard, Terminal } from 'lucide-react';
+import { AlgorithmVisualizerView } from './components/AlgorithmVisualizerView';
+import { BookOpen, Code, LayoutDashboard, Terminal, Zap } from 'lucide-react';
 
 export default function App() {
-  const [viewMode, setViewMode] = useState<'dashboard' | 'class' | 'c_course'>('dashboard');
+  const [viewMode, setViewMode] = useState<'dashboard' | 'class' | 'c_course' | 'visualizer'>('visualizer');
   const [selectedItemId, setSelectedItemId] = useState<string>('clase-1');
+
   const [completedItemIds, setCompletedItemIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('algo_completed_items');
@@ -137,6 +139,8 @@ export default function App() {
           onOpenDashboard={() => setViewMode('dashboard')}
           isCCourseActive={viewMode === 'c_course'}
           onOpenCCourse={() => setViewMode('c_course')}
+          isVisualizerActive={viewMode === 'visualizer'}
+          onOpenVisualizer={() => setViewMode('visualizer')}
           selectedCChapterId={selectedCChapterId}
           onSelectCChapter={handleSelectCChapter}
           completedCSubtopics={completedCSubtopics}
@@ -168,6 +172,14 @@ export default function App() {
                 >
                   <Terminal className="w-3.5 h-3.5" />
                   <span>Ir al Curso C (K&amp;R)</span>
+                </button>
+
+                <button
+                  onClick={() => setViewMode('visualizer')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[#ECFDF5] hover:bg-[#D1FAE5] text-[#065F46] border border-[#6EE7B7] rounded-full transition uppercase tracking-wider text-[11px]"
+                >
+                  <Zap className="w-3.5 h-3.5 text-[#10B981]" />
+                  <span>Visualizador de Algoritmos</span>
                 </button>
 
                 <div className="h-4 w-px bg-[#E5E2DE]" />
@@ -205,7 +217,9 @@ export default function App() {
 
           {/* Active View Display */}
           <div className="flex-1 overflow-y-auto flex flex-col">
-            {viewMode === 'dashboard' ? (
+            {viewMode === 'visualizer' ? (
+              <AlgorithmVisualizerView />
+            ) : viewMode === 'dashboard' ? (
               <DashboardView
                 courses={COURSES_DATA}
                 completedItemIds={completedItemIds}
