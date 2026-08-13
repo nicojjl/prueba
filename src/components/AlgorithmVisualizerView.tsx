@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { AlgorithmItem, AlgoCategory } from '../types';
 import { ALGORITHMS_DATA, ALGO_CATEGORIES } from '../data/algorithmsData';
 import { AlgorithmVisualizer } from './AlgorithmVisualizer';
@@ -38,6 +38,7 @@ import { MarkdownRenderer } from './MarkdownRenderer';
 import { ExportSummaryButton } from './ExportSummaryButton';
 
 interface AlgorithmVisualizerViewProps {
+  selectedAlgoId?: string;
   onSelectAlgorithm?: (algoId: string) => void;
 }
 
@@ -50,12 +51,23 @@ const CATEGORY_DESCRIPTIONS: Record<AlgoCategory, string> = {
   dp_backtracking: 'Descompón subproblemas superpuestos con Programación Dinámica (Mochila 0/1) y explora espacios de estados (N-Reinas).'
 };
 
-export const AlgorithmVisualizerView: React.FC<AlgorithmVisualizerViewProps> = () => {
+export const AlgorithmVisualizerView: React.FC<AlgorithmVisualizerViewProps> = ({
+  selectedAlgoId: propSelectedAlgoId,
+  onSelectAlgorithm: propOnSelectAlgorithm,
+}) => {
   // Navigation & View Mode
-  const [viewMode, setViewMode] = useState<'landing' | 'workspace'>('landing');
-  const [selectedAlgoId, setSelectedAlgoId] = useState<string>('merge-sort');
+  const [viewMode, setViewMode] = useState<'landing' | 'workspace'>('workspace');
+  const [selectedAlgoId, setSelectedAlgoId] = useState<string>(propSelectedAlgoId || 'merge-sort');
   const [activeCategory, setActiveCategory] = useState<AlgoCategory | 'todas'>('todas');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  useEffect(() => {
+    if (propSelectedAlgoId && propSelectedAlgoId !== selectedAlgoId) {
+      setSelectedAlgoId(propSelectedAlgoId);
+      setViewMode('workspace');
+      setActiveTab('simulation');
+    }
+  }, [propSelectedAlgoId]);
 
   // Workspace Tabs: Progressive disclosure
   const [activeTab, setActiveTab] = useState<'simulation' | 'pseudocode' | 'complexity' | 'code'>('simulation');
@@ -71,8 +83,10 @@ export const AlgorithmVisualizerView: React.FC<AlgorithmVisualizerViewProps> = (
   const [showLeftScroll, setShowLeftScroll] = useState<boolean>(false);
   const [showRightScroll, setShowRightScroll] = useState<boolean>(true);
 
-  const selectedAlgo: AlgorithmItem =
-    ALGORITHMS_DATA.find((a) => a.id === selectedAlgoId) || ALGORITHMS_DATA[0];
+  const selectedAlgo: AlgorithmItem = useMemo(
+    () => ALGORITHMS_DATA.find((a) => a.id === selectedAlgoId) || ALGORITHMS_DATA[0],
+    [selectedAlgoId]
+  );
 
   // Current Code for the active algorithm and language
   const codeKey = `${selectedAlgo.id}_${codeLang}`;
@@ -80,14 +94,18 @@ export const AlgorithmVisualizerView: React.FC<AlgorithmVisualizerViewProps> = (
   const currentCode = userCodes[codeKey] !== undefined ? userCodes[codeKey] : defaultCodeForLang;
 
   // Filter algorithms
-  const filteredAlgos = ALGORITHMS_DATA.filter((algo) => {
-    const matchesCategory = activeCategory === 'todas' || algo.category === activeCategory;
-    const matchesSearch =
-      algo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      algo.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      algo.categoryLabel.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const filteredAlgos = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return ALGORITHMS_DATA.filter((algo) => {
+      const matchesCategory = activeCategory === 'todas' || algo.category === activeCategory;
+      const matchesSearch =
+        !q ||
+        algo.name.toLowerCase().includes(q) ||
+        algo.subtitle.toLowerCase().includes(q) ||
+        algo.categoryLabel.toLowerCase().includes(q);
+      return matchesCategory && matchesSearch;
+    });
+  }, [activeCategory, searchQuery]);
 
   // Check scroll position for categories tab bar
   const checkScrollPosition = () => {
@@ -117,6 +135,9 @@ export const AlgorithmVisualizerView: React.FC<AlgorithmVisualizerViewProps> = (
     setSelectedAlgoId(algoId);
     setViewMode('workspace');
     setActiveTab('simulation');
+    if (propOnSelectAlgorithm) {
+      propOnSelectAlgorithm(algoId);
+    }
   };
 
   const handleSelectCategoryFromLanding = (catId: AlgoCategory) => {

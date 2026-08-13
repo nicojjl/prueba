@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { COURSES_DATA } from './data/coursesData';
 import { CourseItem, Exercise } from './types';
 import { Header } from './components/Header';
@@ -14,15 +14,18 @@ import { DashboardView } from './components/DashboardView';
 import { CCourseView } from './components/CCourseView';
 import { AlgorithmVisualizerView } from './components/AlgorithmVisualizerView';
 import { LeaderboardView } from './components/LeaderboardView';
+import { CertamenesView } from './components/CertamenesView';
 import { UserProfile } from './types';
 import { calculateUserXP, getLevelInfo, checkAndUpateStreak } from './utils/gamification';
 import { decodeShareCode, SharedCodePayload } from './utils/codeSharing';
 import { SharedCodeNotificationModal } from './components/SharedCodeNotificationModal';
+import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { BookOpen, Code, LayoutDashboard, Terminal, Zap, Share2 } from 'lucide-react';
 
 export default function App() {
-  const [viewMode, setViewMode] = useState<'dashboard' | 'class' | 'c_course' | 'visualizer' | 'leaderboard'>('dashboard');
+  const [viewMode, setViewMode] = useState<'dashboard' | 'class' | 'c_course' | 'visualizer' | 'leaderboard' | 'certamenes'>('dashboard');
   const [selectedItemId, setSelectedItemId] = useState<string>('clase-1');
+  const [selectedAlgoId, setSelectedAlgoId] = useState<string>('merge-sort');
 
   // User Gamification Profile State
   const [userProfile, setUserProfile] = useState<UserProfile>(() => {
@@ -154,29 +157,31 @@ export default function App() {
     localStorage.setItem('algo_completed_c_subtopics', JSON.stringify(completedCSubtopics));
   }, [completedCSubtopics]);
 
-  const currentItem: CourseItem =
-    COURSES_DATA.find((item) => item.id === selectedItemId) || COURSES_DATA[0];
+  const currentItem: CourseItem = useMemo(
+    () => COURSES_DATA.find((item) => item.id === selectedItemId) || COURSES_DATA[0],
+    [selectedItemId]
+  );
 
-  const currentExercises = currentItem.exercises || [];
+  const currentExercises = useMemo(() => currentItem.exercises || [], [currentItem]);
 
-  const handleToggleCompleted = (id: string) => {
+  const handleToggleCompleted = useCallback((id: string) => {
     setCompletedItemIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
-  };
+  }, []);
 
-  const handleToggleCSubtopicCompleted = (subtopicId: string) => {
+  const handleToggleCSubtopicCompleted = useCallback((subtopicId: string) => {
     setCompletedCSubtopics((prev) =>
       prev.includes(subtopicId)
         ? prev.filter((id) => id !== subtopicId)
         : [...prev, subtopicId]
     );
-  };
+  }, []);
 
-  const handleSelectCChapter = (chapterId: string) => {
+  const handleSelectCChapter = useCallback((chapterId: string) => {
     setSelectedCChapterId(chapterId);
     setViewMode('c_course');
-  };
+  }, []);
 
   const handleNextClass = () => {
     if (currentItem.nextItemId) {
@@ -195,13 +200,13 @@ export default function App() {
     }
   };
 
-  const handleSelectClass = (classId: string, tab: 'theory' | 'exercises' = 'theory') => {
+  const handleSelectClass = useCallback((classId: string, tab: 'theory' | 'exercises' = 'theory') => {
     setSelectedItemId(classId);
     setActiveTab(tab);
     setViewMode('class');
-  };
+  }, []);
 
-  const handleOpenGlobalExercise = (exercise: Exercise) => {
+  const handleOpenGlobalExercise = useCallback((exercise: Exercise) => {
     // Find class that contains this exercise
     const foundClass = COURSES_DATA.find((item) =>
       (item.exercises || []).some((ex) => ex.id === exercise.id)
@@ -213,18 +218,20 @@ export default function App() {
     setSelectedItemId(foundClass.id);
     setActiveTab('exercises');
     setViewMode('class');
-  };
+  }, []);
 
-  const userXP = calculateUserXP(
-    completedItemIds,
-    solvedExerciseIds,
-    completedCSubtopics,
-    userProfile.streakDays
+  const userXP = useMemo(
+    () => calculateUserXP(completedItemIds, solvedExerciseIds, completedCSubtopics, userProfile.streakDays),
+    [completedItemIds, solvedExerciseIds, completedCSubtopics, userProfile.streakDays]
   );
-  const levelInfo = getLevelInfo(userXP);
+
+  const levelInfo = useMemo(() => getLevelInfo(userXP), [userXP]);
 
   return (
     <div className="h-screen max-h-screen bg-[#F9F8F6] text-[#1A1A1A] flex flex-col font-sans selection:bg-[#C2410C] selection:text-white overflow-hidden">
+      {/* PWA Install Banner & Offline Mode Indicator */}
+      <PWAInstallBanner />
+
       {/* Top Header */}
       <Header
         completedCount={completedItemIds.length}
@@ -236,6 +243,8 @@ export default function App() {
         streakDays={userProfile.streakDays}
         onOpenLeaderboard={() => setViewMode('leaderboard')}
         isLeaderboardActive={viewMode === 'leaderboard'}
+        onOpenCertamenes={() => setViewMode('certamenes')}
+        isCertamenesActive={viewMode === 'certamenes'}
       />
 
       {/* Main Workspace Layout */}
@@ -255,9 +264,16 @@ export default function App() {
             onOpenLeaderboard={() => setViewMode('leaderboard')}
             isAlgoCourseActive={viewMode === 'class'}
             onOpenAlgoCourse={() => setViewMode('class')}
+            isCertamenesActive={viewMode === 'certamenes'}
+            onOpenCertamenes={() => setViewMode('certamenes')}
             selectedCChapterId={selectedCChapterId}
             onSelectCChapter={handleSelectCChapter}
             completedCSubtopics={completedCSubtopics}
+            selectedAlgoId={selectedAlgoId}
+            onSelectAlgorithm={(algoId) => {
+              setSelectedAlgoId(algoId);
+              setViewMode('visualizer');
+            }}
             onSelectItem={(id) => {
               setSelectedItemId(id);
               setActiveTab('theory');
@@ -332,7 +348,9 @@ export default function App() {
 
           {/* Active View Display */}
           <div className="flex-1 overflow-y-auto flex flex-col">
-            {viewMode === 'leaderboard' ? (
+            {viewMode === 'certamenes' ? (
+              <CertamenesView onBackToDashboard={() => setViewMode('dashboard')} />
+            ) : viewMode === 'leaderboard' ? (
               <LeaderboardView
                 completedItemIds={completedItemIds}
                 solvedExerciseIds={solvedExerciseIds}
@@ -341,7 +359,10 @@ export default function App() {
                 onUpdateProfile={(updated) => setUserProfile(updated)}
               />
             ) : viewMode === 'visualizer' ? (
-              <AlgorithmVisualizerView />
+              <AlgorithmVisualizerView
+                selectedAlgoId={selectedAlgoId}
+                onSelectAlgorithm={(algoId) => setSelectedAlgoId(algoId)}
+              />
             ) : viewMode === 'dashboard' ? (
               <DashboardView
                 courses={COURSES_DATA}
@@ -357,6 +378,7 @@ export default function App() {
                   setViewMode('class');
                 }}
                 onOpenLeaderboard={() => setViewMode('leaderboard')}
+                onOpenCertamenes={() => setViewMode('certamenes')}
                 userXP={userXP}
                 userLevel={levelInfo.level}
                 streakDays={userProfile.streakDays}

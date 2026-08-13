@@ -12,13 +12,28 @@ export interface AppUpdate {
 
 export const APP_UPDATES: AppUpdate[] = [
   {
+    id: 'update-v3.0',
+    version: 'v3.0',
+    date: '13 de Agosto, 2026',
+    title: 'Progressive Web App (PWA) & Modo 100% Offline',
+    badge: 'PWA & Mobile',
+    badgeColor: 'green',
+    isLatest: true,
+    description: 'Convierte la plataforma en una aplicación nativa instalable en tu teléfono o computador. Estudia teoría, algoritmos y practica C sin conexión a Internet.',
+    highlights: [
+      'Instalable en Android, iOS y Desktop: Presiona "Añadir a la pantalla de inicio" para tener acceso directo como app nativa.',
+      'Estudio 100% Offline con Service Worker: Toda la teoría, simuladores visuales, quizes y ejercicios de C corren directo en tu navegador sin consumir datos.',
+      'Indicador de Estado Offline: Detección inteligente de conectividad con banner de estado y soporte especial para navegadores móviles Safari y Chrome.'
+    ]
+  },
+  {
     id: 'update-v2.9',
     version: 'v2.9',
     date: '13 de Agosto, 2026',
     title: 'Exportador de Resúmenes en PDF y Markdown (.md)',
     badge: 'Estudio & Exámenes',
     badgeColor: 'purple',
-    isLatest: true,
+    isLatest: false,
     description: 'Descarga fichas de repaso completas con teoría, pseudocódigo Cormen (CLRS), análisis Big-O y preguntas de autoevaluación para estudiar antes de tus pruebas.',
     highlights: [
       'Exportación en Markdown (.md): Genera archivos Markdown limpios estructurados para Obsidian, Notion o VS Code.',

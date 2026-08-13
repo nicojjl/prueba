@@ -1,6 +1,7 @@
-import React from 'react';
-import { CourseItem } from '../types';
+import React, { useState, useMemo } from 'react';
+import { CourseItem, AlgoCategory } from '../types';
 import { C_COURSE_DATA } from '../data/cCourseData';
+import { ALGORITHMS_DATA, ALGO_CATEGORIES } from '../data/algorithmsData';
 import {
   BookOpen,
   Wrench,
@@ -11,7 +12,13 @@ import {
   Terminal,
   Code,
   GraduationCap,
-  Trophy
+  Trophy,
+  FileText,
+  Search,
+  Zap,
+  Sparkles,
+  X,
+  Filter
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -29,12 +36,16 @@ interface SidebarProps {
   onOpenLeaderboard?: () => void;
   isAlgoCourseActive?: boolean;
   onOpenAlgoCourse?: () => void;
+  isCertamenesActive?: boolean;
+  onOpenCertamenes?: () => void;
   selectedCChapterId?: string;
   onSelectCChapter?: (chapterId: string) => void;
   completedCSubtopics?: string[]; // IDs of completed C chapters
+  selectedAlgoId?: string;
+  onSelectAlgorithm?: (algoId: string) => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({
+export const Sidebar: React.FC<SidebarProps> = React.memo(({
   items,
   selectedItemId,
   onSelectItem,
@@ -49,10 +60,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenLeaderboard,
   isAlgoCourseActive = false,
   onOpenAlgoCourse,
+  isCertamenesActive = false,
+  onOpenCertamenes,
   selectedCChapterId = 'cap-1',
   onSelectCChapter,
   completedCSubtopics = [],
+  selectedAlgoId = 'merge-sort',
+  onSelectAlgorithm,
 }) => {
+  // Visualizer search and category filter state inside Sidebar
+  const [algoSearchQuery, setAlgoSearchQuery] = useState('');
+  const [sidebarAlgoCategory, setSidebarAlgoCategory] = useState<AlgoCategory | 'todas'>('todas');
+
+  const filteredSidebarAlgos = useMemo(() => {
+    const q = algoSearchQuery.toLowerCase().trim();
+    return ALGORITHMS_DATA.filter((algo) => {
+      const matchCat = sidebarAlgoCategory === 'todas' || algo.category === sidebarAlgoCategory;
+      const matchSearch =
+        !q ||
+        algo.name.toLowerCase().includes(q) ||
+        algo.subtitle.toLowerCase().includes(q) ||
+        algo.categoryLabel.toLowerCase().includes(q) ||
+        algo.complexity?.timeWorst?.toLowerCase().includes(q) ||
+        algo.complexity?.timeAverage?.toLowerCase().includes(q);
+      return matchCat && matchSearch;
+    });
+  }, [sidebarAlgoCategory, algoSearchQuery]);
   return (
     <aside className="w-full lg:w-80 h-[45vh] lg:h-auto max-h-[calc(100vh-4rem)] bg-[#F9F8F6] border-b lg:border-b-0 lg:border-r border-[#E5E2DE] text-[#1A1A1A] flex flex-col shrink-0 overflow-hidden">
       {/* Top Navigation Switcher */}
@@ -167,18 +200,185 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <ChevronRight className="w-4 h-4 opacity-60" />
         </button>
+
+        <button
+          onClick={() => {
+            if (onOpenCertamenes) {
+              onOpenCertamenes();
+            } else {
+              onOpenDashboard();
+              setTimeout(() => {
+                document.getElementById('certamenes-section')?.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }
+          }}
+          className={`w-full p-3 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+            isCertamenesActive
+              ? 'border-[#C2410C] bg-[#C2410C] text-white shadow-xs'
+              : 'border-[#FDBA74] bg-[#FFF7ED] hover:bg-[#FFEAD5] text-[#C2410C]'
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            <div className={`p-1.5 rounded-lg ${isCertamenesActive ? 'bg-white text-[#C2410C]' : 'bg-[#C2410C] text-white'}`}>
+              <FileText className="w-4 h-4" />
+            </div>
+            <div className="text-left">
+              <span className="text-xs font-serif font-bold block leading-tight">
+                Certámenes &amp; PDF's USM
+              </span>
+              <span className={`text-[10px] font-mono block ${isCertamenesActive ? 'text-white/80' : 'text-[#C2410C]'}`}>
+                6 Pruebas • Pautas C99 &amp; PDF
+              </span>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 opacity-60" />
+        </button>
       </div>
 
-      {/* Course Title Header */}
-      <div className="p-3 sm:p-4 border-b border-[#E5E2DE] bg-[#F9F8F6] shrink-0">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[#8C8882] block">
-          {isVisualizerActive ? 'Modo Visualizador de Algoritmos' : isCCourseActive ? 'Capítulos del Curso Lenguaje C (K&R):' : 'Lecciones de Algorítmica (CLRS):'}
-        </span>
+      {/* Course / Visualizer Title Header */}
+      <div className="p-3 sm:p-4 border-b border-[#E5E2DE] bg-[#F9F8F6] shrink-0 space-y-2.5">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#8C8882] block">
+            {isVisualizerActive
+              ? 'Catálogo de Algoritmos (34):'
+              : isCCourseActive
+              ? 'Capítulos del Curso Lenguaje C (K&R):'
+              : 'Lecciones de Algorítmica (CLRS):'}
+          </span>
+          {isVisualizerActive && (
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] border border-[#6EE7B7] font-bold">
+              {filteredSidebarAlgos.length} / {ALGORITHMS_DATA.length}
+            </span>
+          )}
+        </div>
+
+        {/* Visualizer Search & Category Filter Controls */}
+        {isVisualizerActive && (
+          <div className="space-y-2">
+            {/* Search input */}
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-[#8C8882] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={algoSearchQuery}
+                onChange={(e) => setAlgoSearchQuery(e.target.value)}
+                placeholder="Filtrar algoritmo, O(n)..."
+                className="w-full bg-white border border-[#E5E2DE] focus:border-[#10B981] rounded-xl pl-8 pr-7 py-1.5 text-xs text-[#1A1A1A] outline-none transition-colors"
+              />
+              {algoSearchQuery && (
+                <button
+                  onClick={() => setAlgoSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#8C8882] hover:text-[#1A1A1A] p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none text-[10px]">
+              <button
+                onClick={() => setSidebarAlgoCategory('todas')}
+                className={`px-2 py-1 rounded-lg shrink-0 font-medium transition cursor-pointer ${
+                  sidebarAlgoCategory === 'todas'
+                    ? 'bg-[#10B981] text-white font-bold'
+                    : 'bg-white text-[#666] hover:bg-[#F2F1EE] border border-[#E5E2DE]'
+                }`}
+              >
+                Todas ({ALGORITHMS_DATA.length})
+              </button>
+              {ALGO_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSidebarAlgoCategory(cat.id)}
+                  className={`px-2 py-1 rounded-lg shrink-0 font-medium transition flex items-center gap-1 cursor-pointer ${
+                    sidebarAlgoCategory === cat.id
+                      ? 'bg-[#10B981] text-white font-bold'
+                      : 'bg-white text-[#666] hover:bg-[#F2F1EE] border border-[#E5E2DE]'
+                  }`}
+                  title={cat.label}
+                >
+                  <span>{cat.icon}</span>
+                  <span>{cat.label.split(' ')[0]}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Course List */}
+      {/* Course / Algorithm List */}
       <div className="overflow-y-auto flex-1 min-h-0 p-3 space-y-2 scroll-smooth">
-        {isCCourseActive ? (
+        {isVisualizerActive ? (
+          /* Visualizer Algorithms List */
+          filteredSidebarAlgos.length === 0 ? (
+            <div className="p-6 text-center text-[#8C8882] space-y-2">
+              <p className="text-xs">No se encontraron algoritmos con ese filtro.</p>
+              <button
+                onClick={() => {
+                  setAlgoSearchQuery('');
+                  setSidebarAlgoCategory('todas');
+                }}
+                className="text-xs font-bold text-[#10B981] hover:underline"
+              >
+                Restablecer filtros
+              </button>
+            </div>
+          ) : (
+            filteredSidebarAlgos.map((algo) => {
+              const isSelectedAlgo = algo.id === selectedAlgoId;
+
+              return (
+                <button
+                  key={algo.id}
+                  onClick={() => onSelectAlgorithm && onSelectAlgorithm(algo.id)}
+                  className={`w-full text-left p-3 rounded-xl border transition-all duration-200 flex items-start gap-2.5 group cursor-pointer ${
+                    isSelectedAlgo
+                      ? 'bg-[#ECFDF5] border-[#10B981] text-[#065F46] font-semibold shadow-xs ring-1 ring-[#10B981]/30'
+                      : 'bg-white hover:bg-[#F9F8F6] border-[#E5E2DE] text-[#4A4742]'
+                  }`}
+                >
+                  {/* Algorithm Icon */}
+                  <div className="mt-0.5 text-base shrink-0 select-none">
+                    <span>{algo.icon}</span>
+                  </div>
+
+                  {/* Title & Metadata */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider bg-[#F2F1EE] text-[#4A4742] border border-[#E5E2DE]">
+                        {algo.categoryLabel}
+                      </span>
+                      {algo.complexity?.timeWorst && (
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white text-[#047857] border border-[#A7F3D0] font-bold">
+                          {algo.complexity.timeWorst}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3
+                      className={`text-xs font-serif ${
+                        isSelectedAlgo ? 'font-bold text-[#064E3B] text-sm' : 'text-[#1A1A1A]'
+                      } truncate`}
+                    >
+                      {algo.name}
+                    </h3>
+
+                    <p className="text-[10px] text-[#8C8882] truncate mt-0.5">
+                      {algo.subtitle}
+                    </p>
+                  </div>
+
+                  {isSelectedAlgo ? (
+                    <span className="w-2 h-2 rounded-full bg-[#10B981] self-center shrink-0 animate-pulse" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-[#C5C2BD] shrink-0 self-center transition-transform group-hover:translate-x-0.5" />
+                  )}
+                </button>
+              );
+            })
+          )
+        ) : isCCourseActive ? (
           /* 8 Chapters List */
           C_COURSE_DATA.map((chapter) => {
             const isSelectedChapter = chapter.id === selectedCChapterId;
@@ -188,7 +388,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={chapter.id}
                 onClick={() => onSelectCChapter && onSelectCChapter(chapter.id)}
-                className={`w-full text-left p-3.5 rounded-xl border transition-all duration-200 flex items-start gap-3 group ${
+                className={`w-full text-left p-3.5 rounded-xl border transition-all duration-200 flex items-start gap-3 group cursor-pointer ${
                   isSelectedChapter
                     ? 'bg-white border-[#FDBA74] text-[#C2410C] font-semibold shadow-xs'
                     : 'bg-white/60 hover:bg-white border-[#E5E2DE] text-[#4A4742]'
@@ -243,7 +443,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={item.id}
                 onClick={() => onSelectItem(item.id)}
-                className={`w-full text-left p-3.5 rounded-xl border transition-all duration-200 group flex items-start gap-3 ${
+                className={`w-full text-left p-3.5 rounded-xl border transition-all duration-200 group flex items-start gap-3 cursor-pointer ${
                   isSelected
                     ? item.type === 'workshop'
                       ? 'bg-[#FFF7ED] border-[#FDBA74] text-[#C2410C] font-semibold shadow-xs'
@@ -317,4 +517,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
     </aside>
   );
-};
+});
+
+Sidebar.displayName = 'Sidebar';
+

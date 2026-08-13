@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, CheckCircle2, Award, Trophy, Flame, Zap } from 'lucide-react';
+import { BookOpen, CheckCircle2, Award, Trophy, Flame, Zap, FileText } from 'lucide-react';
 
 interface HeaderProps {
   completedCount: number;
@@ -11,6 +11,8 @@ interface HeaderProps {
   streakDays?: number;
   onOpenLeaderboard?: () => void;
   isLeaderboardActive?: boolean;
+  onOpenCertamenes?: () => void;
+  isCertamenesActive?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -22,6 +24,8 @@ export const Header: React.FC<HeaderProps> = ({
   streakDays = 1,
   onOpenLeaderboard,
   isLeaderboardActive = false,
+  onOpenCertamenes,
+  isCertamenesActive = false,
 }) => {
   const progressPercent = Math.round((completedCount / totalCount) * 100);
 
@@ -50,8 +54,26 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Right Section: XP/Leaderboard Button & Progress Bar */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        {/* Right Section: Certámenes Button, XP/Leaderboard Button & Progress Bar */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Certámenes & PDF's Button */}
+          {onOpenCertamenes && (
+            <button
+              onClick={onOpenCertamenes}
+              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-2xl border text-xs font-bold transition shadow-xs cursor-pointer ${
+                isCertamenesActive
+                  ? 'bg-[#C2410C] text-white border-[#C2410C] ring-2 ring-[#C2410C]/20'
+                  : 'bg-[#FFF7ED] hover:bg-[#FFEAD5] text-[#C2410C] border-[#FDBA74]'
+              }`}
+              title="Ver Certámenes USM, Pautas de Corrección y Descargar PDF's"
+            >
+              <FileText className={`w-4 h-4 shrink-0 ${isCertamenesActive ? 'text-white' : 'text-[#C2410C]'}`} />
+              <span className="font-mono uppercase tracking-wider text-[10px] sm:text-[11px] font-bold">
+                PDF's &amp; Certámenes
+              </span>
+            </button>
+          )}
+
           {/* Leaderboard Button */}
           {onOpenLeaderboard && (
             <button
@@ -105,5 +127,4 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
-
 

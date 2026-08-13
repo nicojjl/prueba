@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Exercise } from '../types';
 import {
   Code,
@@ -490,8 +490,10 @@ export const ExercisePlayground: React.FC<ExercisePlaygroundProps> = ({
     }
   };
 
-  const lineCount = code.split('\n').length;
-  const lineNumbersArray = Array.from({ length: Math.max(lineCount, 12) }, (_, i) => i + 1);
+  const lineNumbersArray = useMemo(() => {
+    const lineCount = code.split('\n').length;
+    return Array.from({ length: Math.max(lineCount, 12) }, (_, i) => i + 1);
+  }, [code]);
 
   return (
     <motion.div
@@ -724,7 +726,7 @@ export const ExercisePlayground: React.FC<ExercisePlaygroundProps> = ({
             {/* Editor Footer Status Bar */}
             <div className="bg-[#11111B] px-4 py-2 border-t border-[#313244] flex items-center justify-between text-[11px] font-mono text-[#6C7086]">
               <div className="flex items-center gap-4">
-                <span>Líneas: {lineCount}</span>
+                <span>Líneas: {lineNumbersArray.length}</span>
                 <span>Caracteres: {code.length}</span>
               </div>
               <div className="flex items-center gap-1.5 text-[#A6E3A1]">
