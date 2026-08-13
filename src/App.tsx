@@ -16,7 +16,7 @@ import { AlgorithmVisualizerView } from './components/AlgorithmVisualizerView';
 import { BookOpen, Code, LayoutDashboard, Terminal, Zap } from 'lucide-react';
 
 export default function App() {
-  const [viewMode, setViewMode] = useState<'dashboard' | 'class' | 'c_course' | 'visualizer'>('visualizer');
+  const [viewMode, setViewMode] = useState<'dashboard' | 'class' | 'c_course' | 'visualizer'>('dashboard');
   const [selectedItemId, setSelectedItemId] = useState<string>('clase-1');
 
   const [completedItemIds, setCompletedItemIds] = useState<string[]>(() => {
@@ -127,30 +127,34 @@ export default function App() {
       <Header
         completedCount={completedItemIds.length}
         totalCount={COURSES_DATA.length}
+        onOpenDashboard={() => setViewMode('dashboard')}
+        isDashboardActive={viewMode === 'dashboard'}
       />
 
       {/* Main Workspace Layout */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-        {/* Left Sidebar */}
-        <Sidebar
-          items={COURSES_DATA}
-          selectedItemId={selectedItemId}
-          isDashboardActive={viewMode === 'dashboard'}
-          onOpenDashboard={() => setViewMode('dashboard')}
-          isCCourseActive={viewMode === 'c_course'}
-          onOpenCCourse={() => setViewMode('c_course')}
-          isVisualizerActive={viewMode === 'visualizer'}
-          onOpenVisualizer={() => setViewMode('visualizer')}
-          selectedCChapterId={selectedCChapterId}
-          onSelectCChapter={handleSelectCChapter}
-          completedCSubtopics={completedCSubtopics}
-          onSelectItem={(id) => {
-            setSelectedItemId(id);
-            setActiveTab('theory');
-            setViewMode('class');
-          }}
-          completedItemIds={completedItemIds}
-        />
+        {/* Left Sidebar (Hidden on Dashboard / Home view) */}
+        {viewMode !== 'dashboard' && (
+          <Sidebar
+            items={COURSES_DATA}
+            selectedItemId={selectedItemId}
+            isDashboardActive={false}
+            onOpenDashboard={() => setViewMode('dashboard')}
+            isCCourseActive={viewMode === 'c_course'}
+            onOpenCCourse={() => setViewMode('c_course')}
+            isVisualizerActive={viewMode === 'visualizer'}
+            onOpenVisualizer={() => setViewMode('visualizer')}
+            selectedCChapterId={selectedCChapterId}
+            onSelectCChapter={handleSelectCChapter}
+            completedCSubtopics={completedCSubtopics}
+            onSelectItem={(id) => {
+              setSelectedItemId(id);
+              setActiveTab('theory');
+              setViewMode('class');
+            }}
+            completedItemIds={completedItemIds}
+          />
+        )}
 
         {/* Center Content Stage */}
         <main className="flex-1 flex flex-col overflow-hidden bg-[#F9F8F6]">
@@ -227,6 +231,12 @@ export default function App() {
                 onSelectClass={handleSelectClass}
                 onOpenGlobalExercise={handleOpenGlobalExercise}
                 onSelectCChapter={handleSelectCChapter}
+                onOpenVisualizer={() => setViewMode('visualizer')}
+                onOpenCCourse={() => setViewMode('c_course')}
+                onOpenAlgoCourse={() => {
+                  setSelectedItemId('clase-1');
+                  setViewMode('class');
+                }}
               />
             ) : viewMode === 'c_course' ? (
               <CCourseView

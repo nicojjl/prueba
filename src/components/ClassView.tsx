@@ -27,6 +27,8 @@ import { GraphVisualizer } from './Visualizers/GraphVisualizer';
 import { getSubclassesForCourse } from '../data/subclassesData';
 import { SubclassDeepeningView } from './SubclassDeepeningView';
 import { SubclassPracticeView } from './SubclassPracticeView';
+import { AlgoClass1Animation1 } from './animations/AlgoClass1Animation1';
+import { AlgoClass1Animation2 } from './animations/AlgoClass1Animation2';
 
 interface ClassViewProps {
   item: CourseItem;
@@ -55,6 +57,15 @@ export const ClassView: React.FC<ClassViewProps> = ({
   const { deepening, practice } = getSubclassesForCourse(item);
 
   const renderVisualizer = () => {
+    if (item.id === 'clase-1') {
+      return (
+        <div className="space-y-6">
+          <AlgoClass1Animation1 />
+          <AlgoClass1Animation2 />
+        </div>
+      );
+    }
+
     switch (item.visualizerType) {
       case 'big_o_chart':
         return <BigOChartVisualizer />;

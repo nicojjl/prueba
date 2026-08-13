@@ -164,6 +164,9 @@ export interface AlgoVisualStep {
   stackQueueState?: { value: string | number; active?: boolean }[];
   treeNodes?: { id: string; value: number; left?: string; right?: string; state?: 'normal' | 'active' | 'found' | 'inserted'; x?: number; y?: number }[];
   dpGrid?: { rowLabels: string[]; colLabels: string[]; matrix: (number | string)[][]; activeCell?: [number, number] };
+  subarrayRange?: [number, number];
+  tempArrays?: { label: string; values: (number | string)[]; activeIndex?: number; color?: string }[];
+  variables?: Record<string, string | number | boolean>;
   codeLine?: number;
 }
 
@@ -174,6 +177,8 @@ export interface AlgorithmItem {
   categoryLabel: string;
   subtitle: string;
   icon: string;
+  pseudocode?: string;
+  cormenChapter?: string;
   difficulty: 'Principiante' | 'Intermedio' | 'Avanzado';
   complexity: AlgoComplexity;
   analogy: {

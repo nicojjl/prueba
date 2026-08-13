@@ -27,6 +27,8 @@ import {
   Wrench
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { CCourseCap1Animation1 } from './animations/CCourseCap1Animation1';
+import { CCourseCap1Animation2 } from './animations/CCourseCap1Animation2';
 
 interface CCourseViewProps {
   completedSubtopics: string[]; // array of completed chapter or subtopic ids
@@ -471,6 +473,12 @@ export const CCourseView: React.FC<CCourseViewProps> = ({
             animate={{ opacity: 1, y: 0 }}
             className="space-y-10"
           >
+            {currentChapter.id === 'cap-1' && (
+              <div className="space-y-8">
+                <CCourseCap1Animation1 />
+                <CCourseCap1Animation2 />
+              </div>
+            )}
             {/* Inspector 1: Punteros y Memoria Stack */}
             <div className="bg-[#F9F8F6] border border-[#E5E2DE] rounded-2xl p-6 space-y-6">
               <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#E5E2DE]">

@@ -693,9 +693,27 @@ void quickSort(std::vector<int>& arr, int low, int high) {
     name: 'Merge Sort (Ordenamiento por Mezcla)',
     category: 'ordenamiento',
     categoryLabel: 'Ordenamiento',
+    cormenChapter: 'Capítulo 2.3 (Divide y Vencerás)',
     subtitle: 'Divide el arreglo por la mitad repetidamente y luego combina las sublistas ordenadas.',
     icon: '🔀',
     difficulty: 'Intermedio',
+    pseudocode: `MERGE-SORT(A, p, r)
+ 1. if p < r
+ 2.   q = ⌊(p + r) / 2⌋
+ 3.   MERGE-SORT(A, p, q)
+ 4.   MERGE-SORT(A, q + 1, r)
+ 5.   MERGE(A, p, q, r)
+
+MERGE(A, p, q, r)
+ 6. n1 = q - p + 1,  n2 = r - q
+ 7. crear arreglos L[1..n1] y R[1..n2]
+ 8. copiar A[p..q] en L, A[q+1..r] en R
+ 9. i = 1,  j = 1
+10. for k = p to r
+11.   if L[i] <= R[j]
+12.     A[k] = L[i];  i = i + 1
+13.   else
+14.     A[k] = R[j];  j = j + 1`,
     complexity: {
       timeBest: 'O(n log n)',
       timeAverage: 'O(n log n)',
