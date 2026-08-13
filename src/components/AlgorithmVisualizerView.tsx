@@ -234,6 +234,7 @@ export const AlgorithmVisualizerView: React.FC<AlgorithmVisualizerViewProps> = (
         pseudocode={fallbackPseudocode}
         defaultInput={fallbackInput}
         generateSteps={selectedAlgo.generateSteps}
+        allowCustomInput={!['bfs', 'n-queens'].includes(selectedAlgo.id)}
       />
     );
   };

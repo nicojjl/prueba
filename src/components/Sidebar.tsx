@@ -9,7 +9,8 @@ import {
   Bookmark,
   LayoutDashboard,
   Terminal,
-  Code
+  Code,
+  GraduationCap
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -23,6 +24,8 @@ interface SidebarProps {
   onOpenCCourse: () => void;
   isVisualizerActive: boolean;
   onOpenVisualizer: () => void;
+  isAlgoCourseActive?: boolean;
+  onOpenAlgoCourse?: () => void;
   selectedCChapterId?: string;
   onSelectCChapter?: (chapterId: string) => void;
   completedCSubtopics?: string[]; // IDs of completed C chapters
@@ -39,6 +42,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenCCourse,
   isVisualizerActive,
   onOpenVisualizer,
+  isAlgoCourseActive = false,
+  onOpenAlgoCourse,
   selectedCChapterId = 'cap-1',
   onSelectCChapter,
   completedCSubtopics = [],
@@ -47,16 +52,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <aside className="w-full lg:w-80 h-[45vh] lg:h-auto max-h-[calc(100vh-4rem)] bg-[#F9F8F6] border-b lg:border-b-0 lg:border-r border-[#E5E2DE] text-[#1A1A1A] flex flex-col shrink-0 overflow-hidden">
       {/* Top Navigation Switcher */}
       <div className="p-3 sm:p-4 border-b border-[#E5E2DE] bg-white shrink-0 space-y-2">
+        {/* Volver al Menú Principal */}
+        <button
+          onClick={onOpenDashboard}
+          className="w-full p-2.5 rounded-xl border border-[#E5E2DE] bg-[#F9F8F6] hover:bg-[#F2F1EE] text-[#4A4742] hover:text-[#1A1A1A] transition-all flex items-center justify-center gap-2 text-xs font-semibold"
+          title="Regresar al Inicio / Menú Principal"
+        >
+          <LayoutDashboard className="w-4 h-4 text-[#C2410C]" />
+          <span>Volver al Menú Principal</span>
+        </button>
+
         <button
           onClick={onOpenVisualizer}
-          className={`w-full p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+          className={`w-full p-3 rounded-xl border transition-all flex items-center justify-between gap-3 ${
             isVisualizerActive
               ? 'bg-[#10B981] text-white border-[#10B981] shadow-xs'
               : 'bg-[#ECFDF5] hover:bg-[#D1FAE5] border-[#6EE7B7] text-[#065F46]'
           }`}
         >
           <div className="flex items-center gap-2.5">
-            <div className={`p-2 rounded-lg ${isVisualizerActive ? 'bg-white text-[#10B981]' : 'bg-[#10B981] text-white'}`}>
+            <div className={`p-1.5 rounded-lg ${isVisualizerActive ? 'bg-white text-[#10B981]' : 'bg-[#10B981] text-white'}`}>
               <Code className="w-4 h-4" />
             </div>
             <div className="text-left">
@@ -73,14 +88,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         <button
           onClick={onOpenCCourse}
-          className={`w-full p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+          className={`w-full p-3 rounded-xl border transition-all flex items-center justify-between gap-3 ${
             isCCourseActive
               ? 'bg-[#C2410C] text-white border-[#C2410C] shadow-xs'
               : 'bg-[#FFF7ED] hover:bg-[#FFEAD5] border-[#FDBA74] text-[#C2410C]'
           }`}
         >
           <div className="flex items-center gap-2.5">
-            <div className={`p-2 rounded-lg ${isCCourseActive ? 'bg-white text-[#C2410C]' : 'bg-[#C2410C] text-white'}`}>
+            <div className={`p-1.5 rounded-lg ${isCCourseActive ? 'bg-white text-[#C2410C]' : 'bg-[#C2410C] text-white'}`}>
               <Terminal className="w-4 h-4" />
             </div>
             <div className="text-left">
@@ -96,22 +111,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         <button
-          onClick={onOpenDashboard}
-          className={`w-full p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3 ${
-            isDashboardActive
+          onClick={() => {
+            if (onOpenAlgoCourse) onOpenAlgoCourse();
+          }}
+          className={`w-full p-3 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+            isAlgoCourseActive
               ? 'bg-[#1A1A1A] text-white border-[#1A1A1A] shadow-xs'
               : 'bg-[#F9F8F6] hover:bg-[#F2F1EE] border-[#E5E2DE] text-[#1A1A1A]'
           }`}
         >
           <div className="flex items-center gap-2.5">
-            <div className={`p-2 rounded-lg ${isDashboardActive ? 'bg-[#C2410C] text-white' : 'bg-[#FFF7ED] text-[#C2410C] border border-[#FDBA74]'}`}>
-              <LayoutDashboard className="w-4 h-4" />
+            <div className={`p-1.5 rounded-lg ${isAlgoCourseActive ? 'bg-[#C2410C] text-white' : 'bg-[#FFF7ED] text-[#C2410C] border border-[#FDBA74]'}`}>
+              <GraduationCap className="w-4 h-4" />
             </div>
             <div className="text-left">
               <span className="text-xs font-serif font-bold block leading-tight">
                 Curso Algorítmica (CLRS)
               </span>
-              <span className={`text-[10px] font-mono block ${isDashboardActive ? 'text-[#FDBA74]' : 'text-[#C2410C]'}`}>
+              <span className={`text-[10px] font-mono block ${isAlgoCourseActive ? 'text-[#FDBA74]' : 'text-[#C2410C]'}`}>
                 16 Clases &amp; 19 Módulos
               </span>
             </div>

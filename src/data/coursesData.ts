@@ -6,102 +6,336 @@ const RAW_COURSES_DATA: CourseItem[] = [
     id: 'clase-1',
     number: 1,
     type: 'class',
-    title: 'Clase 1 – Introducción al Curso',
-    topic: '¿Qué es un algoritmo y por qué la complejidad importa?',
-    cormenChapter: 'Capítulo 1: El papel de los algoritmos en la informática',
-    durationMinutes: 45,
-    summary: 'Compr\endi\endo la definición formal de algoritmo, la noción de problema computacional y la diferencia abismal entre eficiencia computacional y simple hardware rápido.',
+    title: 'Clase 1 – Introducción al Curso y Análisis Algorítmico',
+    topic: '¿Qué es un algoritmo, por qué importa la complejidad y cómo escala el costo computacional?',
+    cormenChapter: 'Capítulo 1: El papel de los algoritmos en la informática (CLRS 4ta Ed., págs. 5–15)',
+    durationMinutes: 60,
+    summary: 'Comprende la definición formal de algoritmo, la noción de problema computacional, las curvas de crecimiento asintótico O(1) a O(2^n) y la razón por la cual la eficiencia algorítmica supera drásticamente al hardware rápido.',
     theoryContent: `
-### 1. ¿Qué es un Algoritmo?
-Según **Cormen et al. (CLRS, Cap. 1.1)**, informalmente un **algoritmo** es cualquier procedimiento computacional bien definido que toma algún valor o conjunto de valores como **entrada** y produce algún valor o conjunto de valores como **salida**. 
-
-Un algoritmo es una secuencia de pasos computaciona\les que transforman la entrada en la salida. También podemos verlo como una herramienta para resolver un **problema computacional bien especificado**.
-
-#### Ejemplo Cotidiano
-Imagínate una receta para hornear un pastel:
-* **Entrada**: Harina, huevos, azúcar, leche, horno precalentado a 180°C.
-* **Pasos (Algoritmo)**: 1) Mezclar secos, 2) Batir líquidos, 3) Unir y hornear 35 minutos.
-* **Salida**: Un pastel listo para comer.
-
-En ciencias de la computación, un problema clásico es **Ordenar una secuencia de números**:
-* **Entrada**: Una secuencia de $n$ números $\\langle a_1, a_2, \\dots, a_n \rang\le$.
-* **Salida**: Una reordenación $\\langle a'_1, a'_2, \\dots, a'_n \rang\le$ tal que $a'_1 \le a'_2 \le \\dots \le a'_n$.
+# Clase 1: Introducción al Curso y Análisis Algorítmico
 
 ---
 
-### 2. ¿Por qué estudiar Complejidad Algorítmica?
-¿Por qué nos importa la velocidad de un algoritmo si las supercomputadoras ejecutan miles de millones de instrucciones por segundo?
+## 1. INTRODUCCIÓN Y MOTIVACIÓN
 
-Veamos la comparación célebre de Cormen (Cap. 1.2):
-Supongamos que enfrentamos una computadora ultra rápida **SuperA** (ejecuta $10^{10}$ instrucciones/seg) ejecutando un algoritmo de ordenamiento lento con tiempo $2n^2$, contra una computadora modesta **LentaB** (ejecuta solo $10^7$ instrucciones/seg) ejecutando Mergesort con tiempo $50n \\log_2 n$.
+### ¿Por qué la Complejidad Algorítmica es la Piedra Angular de la Informática?
+En la era del almacenamiento masivo en la nube, los procesadores multinúcleo a gigahertz y los macrodatos (*Big Data*), existe la falsa creencia de que la potencia bruta del hardware puede compensar el código ineficiente. Nada más alejado de la realidad. Cuando el volumen de datos de entrada $n$ pasa de miles a millones o billones de registros, la **complejidad algorítmica** domina por completo sobre la velocidad de reloj del procesador.
 
-Para ordenar **10 millones de números ($n = 10^7$)**:
-* **SuperA con Algoritmo $O(n^2)$**:
-  $$\\text{Tiempo} = \\frac{2 \\times (10^7)^2}{10^{10}} = 20,000 \\text{ segundos} \\approx 5.5 \\text{ horas.}$$
-* **LentaB con Algoritmo $O(n \\log n)$**:
-  $$\\text{Tiempo} = \\frac{50 \\times 10^7 \\times \\log_2(10^7)}{10^7} \\approx 50 \\times 23.25 \\approx 1,163 \\text{ segundos} \\approx 19.3 \\text{ minutos!}$$
+Un algoritmo no es simplemente "un trozo de código que funciona". Un algoritmo es una especificación matemática rigurosa que transforma recursos computacionales finitos (tiempo de CPU y memoria RAM) en soluciones exactas. Un algoritmo ineficiente ejecutado en la supercomputadora más potente del planeta colapsará irremisiblemente ante un algoritmo eficiente ejecutado en una modesta computadora portátil cuando $n$ crece lo suficiente.
 
-¡La computadora 1000 veces más lenta venció a la supercomputadora por más de 16 veces gracias a usar un algoritmo superior! **Los algoritmos son la tecnología clave.**
-    `,
+### Breve Contexto Histórico
+* **1843 – Ada Lovelace**: Escribió el primer algoritmo formal de la historia diseñado para ser procesado por una máquina (la Máquina Analítica de Charles Babbage), destinado a calcular la secuencia de números de Bernoulli.
+* **1936 – Alan Turing**: En su célebre artículo sobre los "Números Computables", formalizó la definición de algoritmo mediante el modelo de la *Máquina de Turing*, estableciendo los límites matemáticos de lo que es y no es computable (*Problema de la Parada*).
+* **1990 – Cormen, Leiserson, Rivest y Stein (CLRS)**: Publicaron la primera edición de *Introduction to Algorithms*, obra cumbre que estandarizó el análisis asintótico riguroso y la notación Big-O como el lenguaje universal de la ingeniería de software.
+
+### Conexión Conceptual con el Curso
+Esta clase es el cimiento de todo el programa de **Algorítmica & Complejidad**. Las técnicas avanzadas que estudiaremos en clases posteriores —desde estructuras de datos lineales y árboles balanceados Red-Black hasta algoritmos de grafos y programación dinámica— responden a una sola búsqueda fundamental: **reducir la curva de complejidad asintótica** para resolver problemas computacionales en escalas masivas.
+
+---
+
+## 2. EXPLICACIÓN TEÓRICA AMPLIADA
+
+### 2.1 Definición Formal de Algoritmo y Problema Computacional
+Según **Cormen et al. (CLRS, Cap. 1.1)**, informalmente un **algoritmo** es cualquier procedimiento computacional bien definido que toma algún valor o conjunto de valores como **entrada** ($\text{Entrada} = I$) y produce algún valor o conjunto de valores como **salida** ($\text{Salida} = O$), satisfaciendo una relación funcional especificada $O = f(I)$.
+
+Es indispensable distinguir entre dos conceptos frecuentemente confundidos:
+1. **Problema Computacional**: La declaración formal y abstracta de la relación deseada entre las entradas permitidas y la salida esperada.
+2. **Algoritmo**: La secuencia finita, inequívoca y determinista de pasos computacionales concretos que resuelve dicho problema.
+
+#### Las Tres Propiedades Fundamentales de un Algoritmo Correcto
+* **Finitud**: El algoritmo debe detenerse siempre tras un número finito de pasos para cualquier instancia válida de entrada.
+* **Definibilidad (No Ambigüedad)**: Cada paso computacional debe estar rigurosamente especificado, sin interpretaciones ambiguas.
+* **Correctitud**: Se dice que un algoritmo es *correcto* si, para cada instancia de entrada válida, se detiene y produce exactamente la salida requerida por la especificación del problema.
+
+---
+
+### 2.2 Ejemplo Guiado Paso a Paso: Ordenamiento de Secuencias
+Consideremos el problema computacional clásico de **Ordenamiento de una Secuencia de Números**:
+* **Entrada**: Una secuencia de $n$ números $\langle a_1, a_2, \dots, a_n \rangle$.
+* **Salida**: Una reordenación $\langle a'_1, a'_2, \dots, a'_n \rangle$ tal que $a'_1 \le a'_2 \le \dots \le a'_n$.
+
+Supongamos la secuencia concreta de 6 elementos: $I = \langle 31, 41, 59, 26, 41, 58 \rangle$.
+
+#### Enfoque A: Algoritmo Cuadrático $O(n^2)$ (por ejemplo, Insertion Sort o Bubble Sort)
+1. Para colocar $26$ en su lugar correcto, el algoritmo realiza comparaciones e intercambios adyacentes iterativos.
+2. Número total de comparaciones e intercambios en el peor caso para $n=6$:
+   $$\text{Operaciones} \approx \frac{n(n-1)}{2} = \frac{6 \times 5}{2} = 15 \text{ pasos.}$$
+3. Para $n = 1,000,000$ elementos:
+   $$\text{Operaciones} \approx \frac{(10^6)^2}{2} = 5 \times 10^{11} = 500,000,000,000 \text{ pasos.}$$
+
+#### Enfoque B: Algoritmo Logarítmico-Lineal $O(n \log_2 n)$ (por ejemplo, Merge Sort / Ordenamiento por Mezcla)
+1. Divide la secuencia recursivamente en mitades hasta obtener listas de 1 solo elemento.
+2. Fusiona las sublistas ordenadamente aprovechando que ya están ordenadas.
+3. Número total de operaciones para $n = 1,000,000$:
+   $$\text{Operaciones} \approx n \log_2 n = 10^6 \times \log_2(10^6) \approx 10^6 \times 19.93 \approx 20,000,000 \text{ pasos.}$$
+
+¡El algoritmo $O(n \log n)$ requiere **25,000 veces menos operaciones** para el mismo conjunto de datos!
+
+---
+
+### 2.3 Comparativa de Crecimiento Asintótico en Tiempos Reales
+La siguiente tabla ilustra el número de operaciones requeridas por diferentes familias de complejidad según el tamaño de la entrada $n$ (asumiendo 1 microsegundo $1\,\mu\text{s} = 10^{-6}\,\text{s}$ por operación en CPU):
+
+| $n$ (Entrada) | $O(1)$ | $O(\log_2 n)$ | $O(n)$ | $O(n \log_2 n)$ | $O(n^2)$ | $O(2^n)$ |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **$n = 10$** | $1$ ops ($1\,\mu\text{s}$) | $3.3$ ops ($3\,\mu\text{s}$) | $10$ ops ($10\,\mu\text{s}$) | $33$ ops ($33\,\mu\text{s}$) | $100$ ops ($100\,\mu\text{s}$) | $1,024$ ops ($1\,\text{ms}$) |
+| **$n = 100$** | $1$ ops ($1\,\mu\text{s}$) | $6.6$ ops ($7\,\mu\text{s}$) | $100$ ops ($100\,\mu\text{s}$) | $664$ ops ($664\,\mu\text{s}$) | $10,000$ ops ($0.01\,\text{s}$) | $1.26 \times 10^{30}$ ops ($4 \times 10^{16}$ años) |
+| **$n = 1,000$** | $1$ ops ($1\,\mu\text{s}$) | $9.9$ ops ($10\,\mu\text{s}$) | $1,000$ ops ($1\,\text{ms}$) | $9,965$ ops ($10\,\text{ms}$) | $1,000,000$ ops ($1\,\text{s}$) | **Incalculable** (Supera la edad del universo) |
+| **$n = 10,000$** | $1$ ops ($1\,\mu\text{s}$) | $13.2$ ops ($13\,\mu\text{s}$) | $10,000$ ops ($10\,\text{ms}$) | $132,877$ ops ($0.13\,\text{s}$) | $100,000,000$ ops ($1.66\,\text{min}$) | **Imposible** |
+| **$n = 1,000,000$**| $1$ ops ($1\,\mu\text{s}$) | $19.9$ ops ($20\,\mu\text{s}$) | $1,000,000$ ops ($1\,\text{s}$) | $19,931,568$ ops ($19.9\,\text{s}$) | $10^{12}$ ops ($11.5\,\text{días}$) | **Imposible** |
+
+---
+
+### 2.4 Errores Comunes de los Estudiantes
+1. **Confundir tiempo medido en reloj de pared (\`clock()\`) con complejidad algorítmica**: El tiempo en segundos depende de la carga del SO, lenguaje, compilador y temperatura del CPU. La complejidad mide la tasa de crecimiento del número de instrucciones primitivas en función de $n$.
+2. **Creer que el hardware rápido compensa un mal algoritmo**: Como demostró Cormen (Cap. 1.2), si duplicas la velocidad del procesador ejecutando un algoritmo $O(2^n)$, solo podrás procesar 1 elemento adicional ($n+1$) en el mismo tiempo.
+3. **Subestimar las constantes para valores pequeños de $n$**: Si $n \le 10$, un algoritmo $O(n^2)$ sencillo (como Insertion Sort) suele ser más rápido que Merge Sort $O(n \log n)$ debido a que Merge Sort requiere overhead de asignación de memoria y llamadas recursivas.
+4. **Olvidar los casos límite (Edge Cases)**: Un algoritmo puede ser eficiente para entradas promedio pero colapsar con bucles infinitos o desbordamientos si el arreglo está vacío ($n=0$), ya ordenado o contiene elementos duplicados.
+
+---
+
+### 2.5 Variantes y Casos Especiales
+* **Algoritmos Deterministas vs. Probabilistas**: Un algoritmo determinista sigue siempre la misma secuencia de estados para la misma entrada. Un algoritmo probabilista (como QuickSort con pivote aleatorio o Monte Carlo) utiliza números aleatorios para tomar decisiones de ejecución.
+* **Algoritmos In-Place (En el Sitio)**: Algoritmos que solo requieren $O(1)$ memoria adicional constante más allá del arreglo de entrada (ejemplo: HeapSort o Insertion Sort), en contraste con algoritmos que requieren $O(n)$ espacio extra (como Merge Sort).
+
+---
+
+## 3. ANÁLISIS DE COMPLEJIDAD DETALLADO
+
+### 3.1 Derivación Paso a Paso de la Comparación de Cormen (CLRS Cap. 1.2)
+Imaginemos una competencia entre dos sistemas computacionales ordenando $n = 10,000,000 = 10^7$ elementos:
+
+* **SuperA**: Supercomputadora ejecutando un algoritmo de ordenamiento cuadrático $f(n) = 2n^2$ instrucciones.
+  * Capacidad del procesador: $10^{10}$ instrucciones por segundo ($10\,\text{GHz}$).
+  * Tiempo total de ejecución $T_A(n)$:
+    $$T_A(10^7) = \frac{2 \times (10^7)^2}{10^{10}} = \frac{2 \times 10^{14}}{10^{10}} = 20,000\text{ segundos} \approx 5.55\text{ horas.}$$
+
+* **LentaB**: Computadora personal modesta ejecutando Merge Sort con $g(n) = 50n \log_2 n$ instrucciones.
+  * Capacidad del procesador: $10^7$ instrucciones por segundo ($10\,\text{MHz}$ — ¡1,000 veces más lenta que SuperA!).
+  * Tiempo total de ejecución $T_B(n)$:
+    $$T_B(10^7) = \frac{50 \times 10^7 \times \log_2(10^7)}{10^7} = 50 \times \log_2(10^7) \approx 50 \times 23.2534 \approx 1,162.67\text{ segundos} \approx 19.37\text{ minutos.}$$
+
+**Conclusión Matemática**: La computadora 1,000 veces más lenta aplasta a la supercomputadora por **más de 17 veces de ventaja**, demostrando que el orden de crecimiento de la función de complejidad es la variable crítica dominante.
+
+---
+
+## 4. APLICACIONES EN EL MUNDO REAL
+
+1. **Planificadores de Consultas en Motores de Bases de Datos (PostgreSQL / MySQL)**:
+   Cuando ejecutas \`SELECT * FROM usuarios WHERE email = 'ejemplo@correo.com'\`, el optimizador del motor evalúa la cardinalidad. Si existe un índice B-Tree, ejecuta una búsqueda $O(\log n)$ en lugar de un *Sequential Scan* $O(n)$ sobre 50 millones de filas, reduciendo la respuesta de 12 segundos a 0.4 milisegundos.
+2. **Motores de Navegación GPS y Tráfico en Tiempo Real (Google Maps / Waze)**:
+   Modelan la red vial como un grafo con millones de aristas y vértices. Usan variantes optimizadas del algoritmo de Dijkstra y A* ($O((E + V) \log V)$) para calcular rutas óptimas en milisegundos.
+3. **Sistemas de Comercio Financiero de Alta Frecuencia (HFT)**:
+   Las bolsas de valores (NASDAQ, NYSE) procesan millones de órdenes por segundo emparejando ofertas de compra y venta mediante colas de prioridad basadas en Binary Heaps ($O(\log n)$) para evitar latencias en microsegundos.
+
+---
+
+## 5. NOTAS DE IMPLEMENTACIÓN EN C
+
+### Gotchas y Consideraciones Críticas
+1. **Desbordamiento de Enteros (*Integer Overflow*)**:
+   El tipo primitivo \`int\` en arquitectura de 32 bits firmada tiene un rango limitado a $[-2,147,483,648 \dots 2,147,483,647]$. Si intentas calcular $n^2$ con $n = 50,000$, $n^2 = 2,500,000,000$, lo cual desborda silenciosamente un \`int\` produciendo un número negativo.
+   * *Solución*: Para cálculos de complejidad con valores de $n \ge 50,000$, utiliza siempre \`long long\` (64 bits, hasta $\approx 9 \times 10^{18}$) o \`double\`.
+2. **Precisión de \`log2()\`. en \`<math.h>\`**:
+   La función \`log2(x)\` de la biblioteca estándar de C trabaja con tipo \`double\`. Al convertir su resultado a \`int\` mediante *casting* implícito, los errores de redondeo en coma flotante pueden alterar las comparaciones strictly.
+
+\`\`\`c
+#include <stdio.h>
+#include <math.h>
+
+// Forma segura de calcular operaciones sin overflow
+long long calcularPasosCuadraticos(long long n) {
+    return 2 * n * n; // Usa 64 bits para evitar wrap-around negativo
+}
+\`\`\`
+
+---
+
+## 6. GLOSARIO DE TÉRMINOS DE LA CLASE
+
+* **Algoritmo**: Secuencia finita e inequívoca de instrucciones computacionales que transforma entradas en salidas exactas.
+* **Problema Computacional**: Definición abstracta y formal que establece las restricciones entre entradas válidas y salidas esperadas.
+* **Complejidad Asintótica**: Estudio del comportamiento límite de los recursos computacionales (tiempo y espacio) cuando la entrada $n$ tiende a infinito.
+* **Invariante de Bucle**: Propiedad lógica que debe mantenerse verdadera antes de la primera iteración, durante cada ciclo y al finalizar el bucle.
+* **Correctitud**: Propiedad matemática de un algoritmo que garantiza que este siempre se detiene y entrega la respuesta válida especificada.
+
+---
+
+## 7. MATERIALES DE APOYO Y REFERENCIAS
+
+* **Para Profundizar en el Libro de Texto**:
+  * **CLRS 4ta Edición**: Capítulo 1 completo (*The Role of Algorithms in Computing*), Secciones 1.1 y 1.2 (págs. 5–15).
+  * Ejercicios recomendados del libro: Ejercicio 1.2-2 (pivote entre $8n^2$ y $64n \log_2 n$) y Ejercicio 1.2-3 (mínimo $n$ para el cual un algoritmo $100n^2$ supera a $2^n$).
+* **Guía de Uso de la Animación Interactiva de la Clase**:
+  * Utiliza la **Animación 1.1 (Comparador de Crecimiento)** ajustando el selector de $n$ desde 10 hasta 1,000,000 para observar cómo la barra roja $O(n^2)$ eclipsa por completo a la barra naranja $O(n \log n)$.
+  * Utiliza la **Animación 1.2 (Máquina de Transformación)** para seguir el flujo de datos desde la entrada de RAM pasando por el microprocesador hasta la salida ordenada.
+* **Resumen en Una Frase**:
+  > *"Un algoritmo eficiente ejecutado en la computadora más modesta siempre vencerá a un algoritmo ineficiente en la supercomputadora más potente del mundo a medida que el volumen de datos aumenta."*
+`,
     visualizerType: 'big_o_chart',
     checkQuestions: [
       {
         id: 'q1-1',
-        question: 'Según el libro de Cormen, ¿cuál es la definición formal básica de un algoritmo?',
+        question: 'Según la definición formal del libro CLRS (Cormen et al., Cap. 1.1), ¿qué es un algoritmo?',
         options: [
-          'Un programa escrito exclusivamente en lenguaje C o Ensamblador.',
-          'Un procedimiento computacional bien definido que transforma una entrada en una salida deseada.',
-          'Una supercomputadora capaz de procesar datos en para\lelo.',
-          'Una fórmula matemática sin aplicación práctica en software.'
+          'Un programa ejecutable escrito exclusivamente en lenguaje C o ensamblador.',
+          'Un procedimiento computacional bien definido que toma una entrada y produce una salida deseada.',
+          'Una arquitectura de supercomputadora capaz de ejecutar operaciones en paralelo.',
+          'Una biblioteca estándar de funciones matemáticas sin aplicación práctica en software real.'
         ],
         correctIndex: 1,
-        explanation: '¡Correcto! En Cormen Cap 1.1, un algoritmo se define como cualquier procedimiento bien definido que toma entradas y genera salidas exactas.',
-        analogousExplanation: 'Piensa en una licuadora: \le pones fruta y leche (Entrada), sigue las revoluciones de las aspas (Pasos/Algoritmo) y te entrega un licuado perfecto (Salida).'
+        explanation: '¡Correcto! En CLRS Cap 1.1, un algoritmo se define formalmente como cualquier procedimiento computacional bien definido que transforma un conjunto de entradas en un conjunto de salidas.',
+        analogousExplanation: 'Piensa en una procesadora de alimentos: le ingresas ingredientes crudos (Entrada), ejecuta las aspas a velocidad controlada (Pasos del Algoritmo) y produce una mezcla homogénea (Salida).'
       },
       {
         id: 'q1-2',
-        question: 'Si tenemos $n=1,000,000$, ¿por qué un algoritmo $O(n \\log n)$ supera drásticamente a uno $O(n^2)$ incluso en una computadora más lenta?',
+        question: 'Si tenemos una entrada masiva de n = 1,000,000 elementos, ¿por qué un algoritmo O(n log n) supera drásticamente a uno O(n²) ejecutado en una supercomputadora 1,000 veces más rápida?',
         options: [
-          'Porque el número total de operaciones de $n \\log n$ crece muchísimo más despacio que $n^2$ cuando $n$ aumenta.',
-          'Porque la computadora lenta tiene más memoria RAM.',
-          'Porque $n^2$ siempre usa menos ciclos de procesador.',
-          'Porque la notación no afecta el tiempo real de ejecución.'
+          'Porque la tasa de crecimiento de las operaciones de n log n aumenta a un ritmo inmensamente menor que n², dominando sobre la velocidad del CPU.',
+          'Porque el algoritmo O(n log n) consume más memoria RAM y fuerza al procesador a acelerar.',
+          'Porque la notación Big-O es solo una aproximación teórica que no se refleja en tiempo real.',
+          'Porque las supercomputadoras no pueden ejecutar bucles cuadráticos.'
         ],
         correctIndex: 0,
-        explanation: '¡Exacto! El orden de crecimiento del algoritmo domina el tiempo de ejecución a medida que el volumen de datos aumenta.',
-        analogousExplanation: 'Imagina recorrer a pie 10km ($n \\log n$) en vez de dar vueltas en auto en un embotellamiento de 100km ($n^2$). Aunque el auto corra más, la ruta corta gana.'
+        explanation: '¡Exacto! Como demostró Cormen (Cap. 1.2), el orden de crecimiento de la función algorítmica domina el rendimiento cuando n crece, haciendo irrelevante la velocidad pura del hardware.',
+        analogousExplanation: 'Imagina viajar a pie por una autopista directa de 10 km (n log n) versus viajar en un automóvil deportivo a 300 km/h en un laberinto de 500,000 km (n²). Ganará la ruta corta.'
+      },
+      {
+        id: 'q1-3',
+        question: '¿Cuál de los siguientes problemas se beneficia directamente de pasar de una búsqueda lineal O(n) a una búsqueda O(log n)?',
+        options: [
+          'Escribir datos secuenciales en un archivo de texto en disco.',
+          'Buscar un usuario en una base de datos distribuida con 50 millones de filas indexed.',
+          'Sumar todos los elementos de una matriz bidimensional.',
+          'Imprimir todos los elementos de una lista enlazada por pantalla.'
+        ],
+        correctIndex: 1,
+        explanation: '¡Correcto! Buscar en 50 millones de filas con O(log₂ n) requiere solo 26 comparaciones en un índice B-Tree, frente a 50,000,000 en búsqueda lineal.',
+        analogousExplanation: 'Es la diferencia entre buscar una palabra en un diccionario hojeando página por página (O(n)) versus abrirlo exactamente por la mitad recursivamente (O(log n)).'
+      },
+      {
+        id: 'q1-4',
+        question: '¿Qué ocurre al intentar calcular n² en lenguaje C usando el tipo primitivo `int` cuando n = 50,000?',
+        options: [
+          'El programa lanza una excepción de tiempo de ejecución de tipo ArithmeticException.',
+          'El compilador aborta la compilación de inmediato.',
+          'Ocurre un desbordamiento de enteros (Integer Overflow) silencioso produciendo un número negativo debido al límite de 32 bits.',
+          'El valor se convierte automáticamente a punto flotante de doble precisión.'
+        ],
+        correctIndex: 2,
+        explanation: '¡Exacto! En C, un `int` firmado de 32 bits se limita a 2.14x10⁹. Para 50,000², el resultado es 2.5x10⁹, lo que provoca wrap-around negativo en complemento a dos.',
+        analogousExplanation: 'Es como el odómetro analógico de un automóvil antiguo que llega a 999,999 km y al dar un paso más marca 000,000 km.'
+      },
+      {
+        id: 'q1-5',
+        question: '¿Qué es una "Invariante de Bucle" (Loop Invariant) en el análisis formal de algoritmos?',
+        options: [
+          'Una variable global que no puede ser modificada por ninguna función.',
+          'Una propiedad lógica que se mantiene verdadera antes de iniciar el bucle, durante cada iteración y al finalizar la ejecución.',
+          'Un error sintáctico que impide que el bucle `for` termine.',
+          'La velocidad de reloj constante a la que el CPU ejecuta un ciclo `while`.'
+        ],
+        correctIndex: 1,
+        explanation: '¡Correcto! Las invariantes de bucle son la herramienta matemática principal usada en CLRS para demostrar la correctitud formal de los algoritmos.',
+        analogousExplanation: 'En un partido de fútbol, la suma de los goles del equipo A más el equipo B siempre es igual al marcador total del partido durante cualquier minuto del juego.'
       }
     ],
     exercises: [
       {
-        id: "ex-1",
-        title: "Ejercicio 1: Calculador de Pasos Algorítmicos en C",
-        description: "Escribe una función en C `const char* compararEficacia(int n)` que reciba $n$ y compare el número exacto de operaciones de un algoritmo $f(n) = 2n^2$ contra $g(n) = 50n \\log_2(n)$. La función debe retornar `\"f_es_mejor\"` si $f(n) < g(n)$ o `\"g_es_mejor\"` en caso contrario.",
-        cormenRef: "Cormen Cap 1.2 - Ejercicios 1.2-2 y 1.2-3",
-        initialCode: "#include <stdio.h>\n#include <math.h>\n\nconst char* compararEficacia(int n) {\n  // f(n) = 2 * n^2\n  // g(n) = 50 * n * log2(n)\n  \n  // TODO: Escribe tu código en C aquí\n  return \"\";\n}",
-        solutionCode: "#include <stdio.h>\n#include <math.h>\n\nconst char* compararEficacia(int n) {\n  double f = 2 * pow(n, 2);\n  double g = 50 * n * log2(n);\n  if (f < g) {\n    return \"f_es_mejor\";\n  } else {\n    return \"g_es_mejor\";\n  }\n}",
-        hint: "Usa la función pow(n, 2) de <math.h> para f(n), y log2(n) para g(n). Retorna \"f_es_mejor\" o \"g_es_mejor\".",
+        id: 'ex-1-niv1',
+        title: 'Nivel 1 (Conceptual): Predicción de Crecimiento Asintótico',
+        description: 'Dados dos algoritmos A y B con complejidades f(n) = 100n y g(n) = n², determina para qué valor mínimo de n el algoritmo A comienza a ser estrictamente más eficiente que el algoritmo B.',
+        cormenRef: 'CLRS 4ta Ed., Ejercicio 1.2-2',
+        initialCode: '#include <stdio.h>\n\n// Responde en C retornando el valor int mínimo de n\nint calcularPuntoDeCruce() {\n    // f(n) = 100 * n\n    // g(n) = n * n\n    // Queremos encontrar el n donde 100n < n^2\n    return 0;\n}',
+        solutionCode: '#include <stdio.h>\n\nint calcularPuntoDeCruce() {\n    int n = 1;\n    while (100 * n >= n * n) {\n        n++;\n    }\n    return n; // Retorna 101\n}',
+        hint: 'Despeja la desigualdad 100n < n² dividiendo ambos lados entre n (para n > 0). Obtendrás 100 < n, por lo que el primer entero es 101.',
         testCases: [
           {
-                    "id": "t1",
-                    "description": "Para n = 10 (f=200, g=1660)",
-                    "input": "10",
-                    "expectedOutput": "f_es_mejor"
-          },
-          {
-                    "id": "t2",
-                    "description": "Para n = 100 (f=20000, g=33219)",
-                    "input": "100",
-                    "expectedOutput": "f_es_mejor"
-          },
-          {
-                    "id": "t3",
-                    "description": "Para n = 1000 (f=2000000, g=498289)",
-                    "input": "1000",
-                    "expectedOutput": "g_es_mejor"
+            id: 'tc-1',
+            description: 'Verificar el punto de cruce exacto entre 100n y n²',
+            input: '',
+            expectedOutput: '101'
           }
-],
-        explanation: "Para valores pequeños de $n$, la constante 50 hace que $f(n)$ parezca más rápido. Pero para $n=1000$ en adelante, $g(n)$ es inmensamente más eficiente."
+        ],
+        explanation: 'Para n ≤ 100, la constante 100 hace que g(n) = n² parezca más rápido o igual. Pero para n = 101 en adelante, g(n) crece como n² y f(n) = 100n demuestra su superioridad lineal.'
+      },
+      {
+        id: 'ex-1-niv2-bug',
+        title: 'Nivel 2 (Aplicación Guiada): Corrección de Bug de Overflow en C',
+        description: 'Un estudiante escribió la función `long long calcularOperacionesCuadraticas(int n)` para calcular n², pero la función devuelve valores negativos para n = 50,000. Corrige el bug de casting explícito en la expresión C.',
+        cormenRef: 'Gotchas de C - Complemento a Dos y Casting',
+        initialCode: '#include <stdio.h>\n\nlong long calcularOperacionesCuadraticas(int n) {\n    // BUG: La multiplicación (n * n) se realiza primero como int de 32 bits!\n    long long resultado = n * n;\n    return resultado;\n}',
+        solutionCode: '#include <stdio.h>\n\nlong long calcularOperacionesCuadraticas(int n) {\n    // SOLUCIÓN: Castear a (long long) antes de multiplicar\n    long long resultado = (long long)n * n;\n    return resultado;\n}',
+        hint: 'Si multiplicas dos variables `int`, C realiza el producto en aritmética `int` de 32 bits antes de asignar el resultado a `long long`. Realiza un cast explícito `(long long)n`.',
+        testCases: [
+          {
+            id: 'tc-2',
+            description: 'Para n = 50000 (Resultado esperado: 2500000000)',
+            input: '50000',
+            expectedOutput: '2500000000'
+          }
+        ],
+        explanation: 'Al hacer `(long long)n * n`, C promueve ambos operandos a 64 bits, permitiendo almacenar valores de hasta 9x10¹⁸ sin sufrir desbordamiento.'
+      },
+      {
+        id: 'ex-1-niv3-impl1',
+        title: 'Nivel 3 (Implementación C): Comparador de Eficiencia Cormen',
+        description: 'Escribe una función en C `const char* compararEficacia(int n)` que compare el número exacto de operaciones entre f(n) = 2n² y g(n) = 50n log₂(n). Debe retornar "f_es_mejor" si f(n) < g(n) o "g_es_mejor" en caso contrario.',
+        cormenRef: 'CLRS 4ta Ed., Sección 1.2',
+        initialCode: '#include <stdio.h>\n#include <math.h>\n\nconst char* compararEficacia(int n) {\n    // TODO: Calcula f y g usando pow() y log2() de <math.h>\n    return "";\n}',
+        solutionCode: '#include <stdio.h>\n#include <math.h>\n\nconst char* compararEficacia(int n) {\n    double f = 2.0 * n * n;\n    double g = 50.0 * n * log2(n);\n    if (f < g) {\n        return "f_es_mejor";\n    } else {\n        return "g_es_mejor";\n    }\n}',
+        hint: 'Usa `log2(n)` de `<math.h>` y compara los valores en tipo `double` para mantener precisión decimal.',
+        testCases: [
+          {
+            id: 'tc-3a',
+            description: 'Para n = 10 (f=200, g=166.09 -> g es mejor)',
+            input: '10',
+            expectedOutput: 'f_es_mejor'
+          },
+          {
+            id: 'tc-3b',
+            description: 'Para n = 1000 (f=2000000, g=498289 -> g es mejor)',
+            input: '1000',
+            expectedOutput: 'g_es_mejor'
+          }
+        ],
+        explanation: 'Para valores pequeños de n (como n = 10 o 100), la constante 50 hace que g(n) requiera más operaciones. Pero para n = 1000, g(n) es 4 veces más eficiente que f(n).'
+      },
+      {
+        id: 'ex-1-niv4-analisis',
+        title: 'Nivel 4 (Análisis): Cálculo del Término Dominante',
+        description: 'Dado el polinomio de complejidad f(n) = 5n³ + 200n² + 1000n + 5000, escribe una función C `long long obtenerTerminoDominante(int n)` que devuelva únicamente la contribución del término de mayor orden (5n³).',
+        cormenRef: 'CLRS 4ta Ed., Cap 3 - Notación Asintótica',
+        initialCode: '#include <stdio.h>\n\nlong long obtenerTerminoDominante(int n) {\n    // Devuelve solo 5 * n^3\n    return 0;\n}',
+        solutionCode: '#include <stdio.h>\n\nlong long obtenerTerminoDominante(int n) {\n    long long n64 = (long long)n;\n    return 5 * n64 * n64 * n64;\n}',
+        hint: 'Eleva n al cubo usando tipos de 64 bits (`long long`) para evitar overflow en el término n³.',
+        testCases: [
+          {
+            id: 'tc-4',
+            description: 'Para n = 100 (Resultado esperado: 5 * 100³ = 5000000)',
+            input: '100',
+            expectedOutput: '5000000'
+          }
+        ],
+        explanation: 'En el análisis asintótico Big-O, a medida que n tiende a infinito, el término de mayor grado (5n³) eclipsa a todos los términos de grado menor (200n² + 1000n + 5000).'
+      },
+      {
+        id: 'ex-1-niv5-desafio',
+        title: 'Nivel 5 (Desafío Avanzado Integrador): Simulador de Umbral de Ineficiencia',
+        description: 'Escribe un programa en C que determine el mayor valor entero de n para el cual un algoritmo exponencial T(n) = 2ⁿ ejecuta menos operaciones totales que un algoritmo cuadrático T2(n) = 1000n². [Marcado como Avanzado]',
+        cormenRef: 'CLRS 4ta Ed., Problemas del Capítulo 1',
+        initialCode: '#include <stdio.h>\n#include <math.h>\n\nint determinarUmbralExponencial() {\n    // Encuentra el mayor n entero tal que 2^n < 1000 * n^2\n    return 0;\n}',
+        solutionCode: '#include <stdio.h>\n#include <math.h>\n\nint determinarUmbralExponencial() {\n    int n = 1;\n    int ultimoNValido = 1;\n    while (1) {\n        double expVal = pow(2.0, n);\n        double quadVal = 1000.0 * n * n;\n        if (expVal < quadVal) {\n            ultimoNValido = n;\n        } else if (n > 20) {\n            break; // Una vez superado el umbral para n grande, 2^n domina para siempre\n        }\n        n++;\n    }\n    return ultimoNValido; // Retorna 19\n}',
+        hint: 'Usa `pow(2.0, n)` y compara contra `1000.0 * n * n`. Inicia con n=1 e incrementa hasta que 2ⁿ supere definitivamente a 1000n².',
+        testCases: [
+          {
+            id: 'tc-5',
+            description: 'Determinar el último n entero donde 2^n < 1000n²',
+            input: '',
+            expectedOutput: '19'
+          }
+        ],
+        explanation: 'A pesar de la enorme constante 1000, la función exponencial 2ⁿ explota tan rápido que para n = 20, 2²⁰ = 1,048,576 supera a 1000 × 20² = 400,000. ¡El último n válido es 19!'
       }
     ],
     nextItemId: 'clase-2'
@@ -111,31 +345,136 @@ Para ordenar **10 millones de números ($n = 10^7$)**:
     id: 'clase-2',
     number: 2,
     type: 'class',
-    title: 'Clase 2 – Repaso de Programación Básica',
-    topic: 'Variab\les, tipos, condiciona\les, bucles while/for, funciones y pseudocódigo',
-    cormenChapter: 'Capítulo 2: Primeros Pasos (Pseudocódigo del libro)',
+    title: 'Clase 2 – Repaso de Programación Básica y Pseudocódigo CLRS',
+    topic: 'Variables, tipos de datos, estructuras de control, funciones y la sintaxis formal de pseudocódigo en Cormen',
+    cormenChapter: 'Capítulo 2: Primeros Pasos (Getting Started - Sec. 2.1)',
     durationMinutes: 50,
-    summary: 'Revisión estructural del pseudocódigo de Cormen: bucles de control, variables, paso de parámetros e invariantes.',
+    summary: 'Análisis estructural del pseudocódigo formal de Cormen: bloques por identación, convenciones de arreglos base-1, paso por referencia y demostración de corrección mediante Invariantes de Bucle.',
     theoryContent: `
-### 1. Pseudocódigo al Estilo Cormen (CLRS)
-En el libro de Cormen, los algoritmos no se escriben en un lenguaje específico (como C++ o Java), sino en **pseudocódigo**. El pseudocódigo de Cormen sigue reglas claras:
+## 1. INTRODUCCIÓN Y MOTIVACIÓN
 
-1. **Sangría (Indentation)**: Reemplaza las llaves \`{}\` o palabras \`begin/\\end\`. Define la estructura de bloques.
-2. **Estructuras de Control**:
-   * \`while\` condición \`do\`
-   * \`for\` $i = 1$ \`to\` $n$ \`do\`
-   * \`if\` condición \`then\` ... \`else\` ...
-3. **Arreglos**: Se denotan con $A[i]$. **En Cormen, los índices habitualmente empiezan en 1 ($A[1 \\dots n]$)**, aunque en JS/C/C++ empiezan en 0.
-4. **Paso por valor / referencia**: Los tipos compuestos (arreglos y objetos) se pasan por referencia (puntero a los datos).
+### Contexto Histórico y Necesidad Universitaria
+Cuando Thomas Cormen, Charles Leiserson, Ronald Rivest y Clifford Stein escribieron *Introduction to Algorithms* (CLRS) en MIT, se enfrentaron a un dilema fundamental: **¿en qué lenguaje de programación deben expresarse los algoritmos para que conserven su validez académica a lo largo de las décadas?**
+
+Si hubieran elegido Pascal en 1990, C++ en 2001, o Java en 2009, el libro habría quedado obsoleto con los cambios de sintaxis de cada lenguaje. Por ello, diseñaron un **Pseudocódigo Matemático Formal** que omite los detalles de bajo nivel específicos del compilador (como la recolección de basura o las directivas de inclusión) pero retiene con precisión absoluta la lógica de ejecución, la estructura de bloques y el manejo de objetos en memoria.
+
+### Analogía Intuitiva
+El pseudocódigo de Cormen es como el **plano arquitectónico de un edificio**: no especifica qué marca de martillo o clavos usará el carpintero (C, C++, Java o Python), sino la distribución exacta de vigas de carga, dimensiones de columnas y flujos de tránsito que garantizan que la estructura no colapse.
 
 ---
 
-### 2. Estructuras de Bucles e Invariante de Bucle
-Un concepto fundamental en Cormen es la **Invariante de Bucle** (Loop Invariant), que nos permite demostrar que un bucle es correcto analizando 3 propiedades:
-1. **Inicialización**: Es verdadera antes de la primera iteración del bucle.
-2. **Mantenimiento**: Si es verdadera antes de una iteración, se mantiene verdadera antes de la siguiente.
-3. **Terminación**: Al finalizar el bucle, la invariante nos da una propiedad útil para demostrar la corrección del algoritmo.
-    `,
+## 2. EXPLICACIÓN TEÓRICA AMPLIADA
+
+### 2.1 Las Convenciones Formales del Pseudocódigo CLRS
+El pseudocódigo en CLRS sigue cinco reglas estructurales estrictas:
+
+1. **Estructura por Identación (Sangría)**: Los bloques de código dentro de un \`for\`, \`while\` o \`if-else\` se definen exclusivamente por la sangría, eliminando las llaves \`{}\` o las palabras reservadas \`begin/end\`.
+2. **Estructuras de Control Iterativas y Condicionales**:
+   * \`for i = 1 to n do\` (recorre de $1$ a $n$ inclusive de forma ascendente).
+   * \`for i = n downto 1 do\` (recorre de forma descendente).
+   * \`while\` *condición* \`do\` (evalúa la condición antes de cada iteración).
+3. **Indexación de Arreglos Base 1 ($A[1 \\dots n]$)**:
+   * **REGLA FUNDAMENTAL DE CORMEN**: Los arreglos en el libro de texto están indexados habitualmente comenzando en $1$. El primer elemento es $A[1]$ y el último es $A[n]$, donde $n = A.length$.
+   * *Nota de traducción a C*: Al codificar en lenguaje C, **debemos mapear obligatoriamente** la lógica de base 1 a base 0 ($A[0 \\dots n-1]$).
+4. **Paso de Parámetros por Referencia**:
+   * Los tipos primarios (enteros, flotantes, booleanos) se pasan por valor.
+   * Las estructuras compuestas (arreglos, objetos y grafos) se pasan por **referencia** (puntero a la dirección base en memoria RAM). Los cambios dentro del algoritmo afectan directamente los datos originales.
+5. **Acceso a Atributos de Objetos**:
+   * Se denotan mediante el punto: \`x.key\` o \`node.next\`. Un objeto asignado a una variable es una referencia (puntero). Si \`y = x\`, ambas variables apuntan al mismo objeto en memoria RAM.
+
+#### Diagrama de Mapeo de Índices: Cormen (Base-1) vs C (Base-0)
+\`\`\`
+Pseudocódigo Cormen:  [ A[1] ]  [ A[2] ]  [ A[3] ]  ...  [ A[n] ]
+                      ↓          ↓          ↓               ↓
+Código en C Nativo:  [ A[0] ]  [ A[1] ]  [ A[2] ]  ...  [ A[n-1] ]
+\`\`\`
+
+---
+
+### 2.2 La Invariante de Bucle (Loop Invariant)
+Para demostrar formalmente que un algoritmo iterativo produce la respuesta correcta sin recurrir a pruebas empíricas de fuerza bruta, Cormen introduce el método de la **Invariante de Bucle**. Una invariante es una afirmación lógica sobre el estado de las variables que debe cumplir 3 propiedades esenciales:
+
+1. **Inicialización**: La propiedad es verdadera inmediatamente antes de entrar a la primera iteración del bucle.
+2. **Mantenimiento**: Si la propiedad es verdadera antes de una iteración, se mantiene verdadera antes de iniciar la siguiente iteración.
+3. **Terminación**: Cuando el bucle finaliza, la propiedad retenida proporciona una prueba lógica irrefutable de que el algoritmo ha alcanzado la solución correcta.
+
+---
+
+## 3. ANÁLISIS DE COMPLEJIDAD Y RENDIMIENTO
+
+### Conteo Riguroso de Operaciones en Bucles Simples y Anidados
+
+Consideremos el algoritmo de búsqueda lineal para encontrar el elemento $x$ en un arreglo $A$ de $n$ elementos:
+
+\`\`\`text
+LINEAL-SEARCH(A, x)
+1  i = 1
+2  while i <= A.length and A[i] != x do
+3      i = i + 1
+4  if i <= A.length then
+5      return i
+6  else return NIL
+\`\`\`
+
+#### Derivación de Complejidad Temporal:
+* **Mejor Caso ($T_{best}(n)$)**: Ocurre cuando $x$ se encuentra en la primera posición ($A[1] == x$). La condición del \`while\` se ejecuta 1 vez y se retorna inmediatamente.
+  $$\\text{Tiempo} = O(1)$$
+* **Peor Caso ($T_{worst}(n)$)**: Ocurre cuando $x$ no está presente en el arreglo o se encuentra en la última posición ($A[n]$). La condición del \`while\` se evalúa $n+1$ veces y el cuerpo se ejecuta $n$ veces.
+  $$\\text{Tiempo} = c_1 + (n+1)c_2 + n c_3 + c_4 = O(n)$$
+
+---
+
+## 4. APLICACIONES EN EL MUNDO REAL
+
+1. **Analizadores Sintácticos (Parsers) e Intérpretes**: Los compiladores de C y Java leen el código fuente como una secuencia de caracteres y aplican estructuras de control iterativas para verificar la validez sintáctica.
+2. **Motores de Búsqueda de Texto**: La búsqueda secuencial lineal $O(n)$ se utiliza como fallback en buffers de edición en tiempo real (por ejemplo, búsquedas en editores Vim o VSCode sobre documentos pequeños).
+3. **Validación de Integridad de Datos**: Los algoritmos de suma de comprobación (Checksums) recorren linealmente arreglos de bytes calculando acumulación de hash.
+
+---
+
+## 5. NOTAS DE IMPLEMENTACIÓN Y GOTCHAS EN C
+
+### 1. El Error "Off-By-One" (Desfase por un Elemento)
+El desatino más común de los estudiantes al traducir pseudocódigo de Cormen a C es olvidar convertir los límites de los bucles:
+* **Incorrecto (Crash por Segmentation Fault en C)**:
+  \`\`\`c
+  // Causa lectura fuera de límites en A[n]!
+  for (int i = 1; i <= n; i++) {
+      suma += A[i];
+  }
+  \`\`\`
+* **Correcto (Base-0 en C)**:
+  \`\`\`c
+  for (int i = 0; i < n; i++) {
+      suma += A[i];
+  }
+  \`\`\`
+
+### 2. Modificación de Variables de Control
+En el pseudocódigo de Cormen, la variable de un bucle \`for\` incrementa automáticamente. Modificar manualmente la variable del bucle dentro del cuerpo se considera una pésima práctica académica que corrompe la invariante de bucle.
+
+---
+
+## 6. GLOSARIO DE TÉRMINOS DE LA CLASE
+
+* **Pseudocódigo**: Lenguaje informal de alto nivel diseñado para expresar algoritmos omitiendo detalles específicos de compiladores.
+* **Invariante de Bucle**: Propiedad lógica que se demuestra antes, durante y al terminar un bucle para certificar su correctitud matemática.
+* **Indexación Base-1**: Convención matemática en CLRS donde los arreglos inician en el índice 1 ($A[1]$).
+* **Indexación Base-0**: Convención física de memoria usada en C donde los arreglos inician en el desplazamiento 0 ($A[0]$).
+* **Off-By-One Error**: Fallo de programación que ocurre al iterar un elemento de más o de menos en un bucle.
+
+---
+
+## 7. MATERIALES DE APOYO Y REFERENCIAS
+
+* **Para Profundizar en el Libro de Texto**:
+  * **CLRS 4ta Edición**: Capítulo 2 completo (*Getting Started*), Sección 2.1 (págs. 18–24).
+  * Ejercicios del libro: Ejercicio 2.1-1 (trazar Ordenamiento por Inserción) y Ejercicio 2.1-3 (Pseudocódigo de Búsqueda Lineal y prueba de Invariante).
+* **Guía de Uso de la Animación Interactiva de la Clase**:
+  * Utiliza el visualizador de **Mapa de Memoria y Punteros** para inspeccionar la asignación contigua de memoria en arreglos y el comportamiento de variables locales en el stack.
+* **Resumen en Una Frase**:
+  > *"El pseudocódigo formal es el idioma universal de las ciencias de la computación; comprender la traducción entre los índices base-1 del libro y el hardware base-0 de C es el primer paso para dominar los algoritmos."*
+`,
     visualizerType: 'memory_pointers',
     checkQuestions: [
       {
@@ -143,40 +482,125 @@ Un concepto fundamental en Cormen es la **Invariante de Bucle** (Loop Invariant)
         question: 'En el pseudocódigo estándar del libro de Cormen (CLRS), ¿en qué número de índice comienzan usualmente los arreglos?',
         options: ['En índice 0', 'En índice 1', 'En índice -1', 'No tienen índices'],
         correctIndex: 1,
-        explanation: '¡Correcto! Cormen adopta la convención matemática donde los arreglos van de A[1] a A[n]. Cuando programemos en JS/C adaptaremos los índices a base 0.',
+        explanation: '¡Correcto! Cormen adopta la convención matemática donde los arreglos van de A[1] a A[n]. Al programar en C debemos traducirlo a base 0.',
         analogousExplanation: 'En matemática tradicional contamos del 1 al 10. En informática física (C/JS) contamos desde el desplazamiento cero (offset 0).'
+      },
+      {
+        id: 'q2-2',
+        question: '¿Qué tres propiedades deben verificarse para demostrar la corrección de un algoritmo mediante una Invariante de Bucle?',
+        options: [
+          'Compilación, Ejecución y Finalización.',
+          'Inicialización, Mantenimiento y Terminación.',
+          'Entrada, Proceso y Salida.',
+          'Asignación, Declaración y Desreferenciación.'
+        ],
+        correctIndex: 1,
+        explanation: '¡Exacto! Según CLRS Cap. 2.1, la prueba por Invariante requiere demostrar Inicialización (antes del bucle), Mantenimiento (entre iteraciones) y Terminación (al salir).',
+        analogousExplanation: 'Es análogo al principio de inducción matemática: caso base (inicialización), paso inductivo (mantenimiento) y conclusión (terminación).'
       }
     ],
     exercises: [
       {
-        id: "ex-2",
-        title: "Ejercicio 2: Acumulador y Bucle Incremental en C",
-        description: "Escribe una función en C `int sumarArreglo(int arr[], int n)` que calcule la suma de todos los elementos de un arreglo de tamaño `n` usando un bucle iterativo.",
-        cormenRef: "Cormen Cap 2.1 - Estructuras de bucle en pseudocódigo",
-        initialCode: "#include <stdio.h>\n\nint sumarArreglo(int arr[], int n) {\n  int suma = 0;\n  // TODO: Implementa el bucle en C\n  return suma;\n}",
-        solutionCode: "#include <stdio.h>\n\nint sumarArreglo(int arr[], int n) {\n  int suma = 0;\n  for (int i = 0; i < n; i++) {\n    suma += arr[i];\n  }\n  return suma;\n}",
-        hint: "Itera con una variable entera `i` desde 0 hasta `n - 1` acumulando `arr[i]` en `suma`.",
+        id: 'ex-2-niv1',
+        title: 'Nivel 1 (Conceptual): Mapeo de Índices de Cormen a C Base-0',
+        description: 'En el pseudocódigo de Cormen, el último elemento de un arreglo de tamaño n está en A[n]. Escribe una función en C `int obtenerUltimoElemento(int A[], int n)` que devuelva correctamente el último elemento en C.',
+        cormenRef: 'CLRS 4ta Ed., Sec 2.1 - Convenciones de Pseudocódigo',
+        initialCode: '#include <stdio.h>\n\nint obtenerUltimoElemento(int A[], int n) {\n    // BUG: A[n] en C accede fuera del límite!\n    return A[n];\n}',
+        solutionCode: '#include <stdio.h>\n\nint obtenerUltimoElemento(int A[], int n) {\n    // SOLUCIÓN: En C base-0, el último elemento está en A[n - 1]\n    if (n <= 0) return -1;\n    return A[n - 1];\n}',
+        hint: 'En C, un arreglo de tamaño n tiene posiciones válidas de 0 a n-1. Ajusta el índice a `A[n - 1]`.',
         testCases: [
           {
-                    "id": "t1",
-                    "description": "Sumar [1, 2, 3, 4, 5], n=5",
-                    "input": "[1, 2, 3, 4, 5], 5",
-                    "expectedOutput": "15"
-          },
-          {
-                    "id": "t2",
-                    "description": "Sumar [10, -5, 20], n=3",
-                    "input": "[10, -5, 20], 3",
-                    "expectedOutput": "25"
-          },
-          {
-                    "id": "t3",
-                    "description": "Arreglo vacío, n=0",
-                    "input": "[], 0",
-                    "expectedOutput": "0"
+            id: 'tc-2-1',
+            description: 'Obtener último elemento de [10, 20, 30, 40, 50], n=5',
+            input: '[10, 20, 30, 40, 50], 5',
+            expectedOutput: '50'
           }
-],
-        explanation: "Este bucle realiza exactamente $n$ iteraciones para un arreglo de longitud $n$, con una complejidad de tiempo $O(n)$."
+        ],
+        explanation: 'En C, acceder a `A[n]` es un error de "Off-By-One" que lee memoria no asignada. La última posición válida es siempre `A[n - 1]`.'
+      },
+      {
+        id: 'ex-2-niv2-bug',
+        title: 'Nivel 2 (Aplicación Guiada): Corrección de Bug "Off-By-One" en Búsqueda Lineal',
+        description: 'El siguiente código intenta implementar la Búsqueda Lineal de Cormen en C, pero tiene un error de límite en el bucle for que causa un Segmentation Fault. Corrígelo.',
+        cormenRef: 'CLRS 4ta Ed., Ejercicio 2.1-3',
+        initialCode: '#include <stdio.h>\n\nint busquedaLineal(int A[], int n, int x) {\n    // BUG: i <= n en C genera acceso fuera de memoria\n    for (int i = 0; i <= n; i++) {\n        if (A[i] == x) {\n            return i; // Retorna índice base-0\n        }\n    }\n    return -1;\n}',
+        solutionCode: '#include <stdio.h>\n\nint busquedaLineal(int A[], int n, int x) {\n    // SOLUCIÓN: Cambiar la condición a i < n\n    for (int i = 0; i < n; i++) {\n        if (A[i] == x) {\n            return i;\n        }\n    }\n    return -1;\n}',
+        hint: 'Cambia la condición del ciclo `i <= n` por `i < n`.',
+        testCases: [
+          {
+            id: 'tc-2-2a',
+            description: 'Buscar x=30 en [10, 20, 30, 40], n=4 (Índice esperado: 2)',
+            input: '[10, 20, 30, 40], 4, 30',
+            expectedOutput: '2'
+          },
+          {
+            id: 'tc-2-2b',
+            description: 'Buscar x=99 en [10, 20, 30, 40], n=4 (No encontrado: -1)',
+            input: '[10, 20, 30, 40], 4, 99',
+            expectedOutput: '-1'
+          }
+        ],
+        explanation: 'Cambiar `i <= n` a `i < n` asegura que el bucle se detenga en $i = n-1$, inspeccionando exactamente todos los elementos sin provocar desbordamiento de memoria.'
+      },
+      {
+        id: 'ex-2-niv3-impl',
+        title: 'Nivel 3 (Implementación C): Suma Acumulativa de Elementos Pares',
+        description: 'Escribe una función C `int sumarElementosPares(int A[], int n)` que recorra un arreglo de enteros y devuelva únicamente la suma acumulada de los elementos cuyo valor sea un número par (`val % 2 == 0`).',
+        cormenRef: 'CLRS 4ta Ed., Sec 2.1 - Estructuras Iterativas',
+        initialCode: '#include <stdio.h>\n\nint sumarElementosPares(int A[], int n) {\n    int suma = 0;\n    // TODO: Implementa el recorrido acumulando los números pares\n    return suma;\n}',
+        solutionCode: '#include <stdio.h>\n\nint sumarElementosPares(int A[], int n) {\n    int suma = 0;\n    for (int i = 0; i < n; i++) {\n        if (A[i] % 2 == 0) {\n            suma += A[i];\n        }\n    }\n    return suma;\n}',
+        hint: 'Usa el operador módulo `A[i] % 2 == 0` dentro del bucle `for` para identificar valores pares.',
+        testCases: [
+          {
+            id: 'tc-2-3',
+            description: 'Sumar pares de [1, 2, 3, 4, 5, 6], n=6 (2+4+6 = 12)',
+            input: '[1, 2, 3, 4, 5, 6], 6',
+            expectedOutput: '12'
+          }
+        ],
+        explanation: 'El bucle evalúa la condición de paridad mediante el operador residuo `% 2`. Mantiene la invariante acumulando solo los valores válidos en $O(n)$ tiempo.'
+      },
+      {
+        id: 'ex-2-niv4-analisis',
+        title: 'Nivel 4 (Análisis): Verificador de Arreglo Estrictamente Monótono Creciente',
+        description: 'Escribe una función C `int esMonotonoCreciente(int A[], int n)` que devuelva `1` si para todo i se cumple A[i] < A[i+1], o `0` si existe alguna violación.',
+        cormenRef: 'CLRS 4ta Ed., Sec 2.1 - Demostración de Invariantes',
+        initialCode: '#include <stdio.h>\n\nint esMonotonoCreciente(int A[], int n) {\n    // TODO: Verifica la propiedad de monotonía\n    return 1;\n}',
+        solutionCode: '#include <stdio.h>\n\nint esMonotonoCreciente(int A[], int n) {\n    if (n <= 1) return 1;\n    for (int i = 0; i < n - 1; i++) {\n        if (A[i] >= A[i + 1]) {\n            return 0;\n        }\n    }\n    return 1;\n}',
+        hint: 'Itera hasta `n - 1` e inspecciona la pareja `A[i]` y `A[i + 1]`. Si `A[i] >= A[i + 1]`, retorna 0 inmediatamente.',
+        testCases: [
+          {
+            id: 'tc-2-4a',
+            description: 'Para [10, 20, 30, 40], n=4 (Es creciente -> 1)',
+            input: '[10, 20, 30, 40], 4',
+            expectedOutput: '1'
+          },
+          {
+            id: 'tc-2-4b',
+            description: 'Para [10, 25, 20, 40], n=4 (Violación -> 0)',
+            input: '[10, 25, 20, 40], 4',
+            expectedOutput: '0'
+          }
+        ],
+        explanation: 'La función utiliza cortocircuito para retornar `0` apenas se detecta la primera violación. La invariante de bucle garantiza que todo el subarreglo previo $A[0 \\dots i]$ ha sido verificado.'
+      },
+      {
+        id: 'ex-2-niv5-desafio',
+        title: 'Nivel 5 (Desafío Avanzado Integrador): Algoritmo de Rotación de Arreglo in-place',
+        description: 'Escribe una función C `void rotarIzquierda(int A[], int n, int k)` que rote un arreglo k posiciones a la izquierda con complejidad espacial auxiliar O(1). [Marcado como Avanzado]',
+        cormenRef: 'CLRS 4ta Ed., Problemas del Capítulo 2',
+        initialCode: '#include <stdio.h>\n\nvoid invertirSubarreglo(int A[], int inicio, int fin) {\n    while (inicio < fin) {\n        int temp = A[inicio];\n        A[inicio] = A[fin];\n        A[fin] = temp;\n        inicio++;\n        fin--;\n    }\n}\n\nvoid rotarIzquierda(int A[], int n, int k) {\n    // TODO: Utiliza el triple algoritmo de inversión de Jon Bentley\n}',
+        solutionCode: '#include <stdio.h>\n\nvoid invertirSubarreglo(int A[], int inicio, int fin) {\n    while (inicio < fin) {\n        int temp = A[inicio];\n        A[inicio] = A[fin];\n        A[fin] = temp;\n        inicio++;\n        fin--;\n    }\n}\n\nvoid rotarIzquierda(int A[], int n, int k) {\n    if (n <= 1) return;\n    k = k % n;\n    if (k == 0) return;\n    invertirSubarreglo(A, 0, k - 1);\n    invertirSubarreglo(A, k, n - 1);\n    invertirSubarreglo(A, 0, n - 1);\n}',
+        hint: 'Aplica el algoritmo de inversión triple: 1) invierte A[0...k-1], 2) invierte A[k...n-1], 3) invierte todo A[0...n-1]. Complejidad O(n) tiempo y O(1) memoria.',
+        testCases: [
+          {
+            id: 'tc-2-5',
+            description: 'Rotar [1, 2, 3, 4, 5] k=2 posiciones -> [3, 4, 5, 1, 2]',
+            input: '[1, 2, 3, 4, 5], 5, 2',
+            expectedOutput: 'undefined'
+          }
+        ],
+        explanation: 'El célebre algoritmo de rotación mediante tres inversiones invierte bloques contiguos de memoria en $O(n)$ tiempo total sin utilizar memoria auxiliar adicional ($O(1)$ espacio).'
       }
     ],
     prevItemId: 'clase-1',
@@ -187,85 +611,228 @@ Un concepto fundamental en Cormen es la **Invariante de Bucle** (Loop Invariant)
     id: 'clase-3',
     number: 3,
     type: 'class',
-    title: 'Clase 3 – Introducción al Lenguaje C para Cormen',
-    topic: 'Sintaxis de C indispensable, punteros e\lementa\les, arreglos y estructuras (structs)',
-    cormenChapter: 'Capítulo 10.3 y Apéndice B: Representación de estructuras de datos en memoria',
+    title: 'Clase 3 – Punteros, Direcciones de Memoria y Structs en C para Cormen',
+    topic: 'Direccionamiento de memoria RAM (&), desreferenciación (*), la arimética de punteros y estructuras compuestas (structs)',
+    cormenChapter: 'Capítulo 10: Estructuras de Datos Elementales (Sec. 10.3 - Punteros y Objetos)',
     durationMinutes: 55,
-    summary: 'Apr\ender a \leer la memoria de la computadora: direcciones de memoria (\`&\`), desreferenciación de punteros (\`*\`), arreglos contiguos y campos de estructuras (\`struct\`).',
+    summary: 'Aprender a leer y manipular la memoria física de la computadora: operadores &, *, paso de parámetros por referencia, aritmética de punteros, estructuras compuestas (struct) y el operador flecha (->).',
     theoryContent: `
-### 1. ¿Por qué apr\ender los conceptos de C?
-Para compr\ender profundamente el libro de Cormen y la gestión de memoria real de un algoritmo, necesitamos ent\ender qué es un **puntero** y cómo se almacenan las estructuras de datos en la memoria RAM.
+## 1. INTRODUCCIÓN Y MOTIVACIÓN
 
-### 2. Punteros y Direcciones de Memoria
-La memoria RAM es una secuencia gigante de casilleros numerados (direcciones de memoria, ej. \`0x7fff5fbff7c0\`).
+### Contexto Histórico y Necesidad Universitaria
+En los capítulos 10 a 21 del libro de Cormen (CLRS), los algoritmos manipulan **Estructuras de Datos Dinámicas**: Listas Enlazadas, Árboles Binarios de Búsqueda, Montículos (Heaps), Grafos y Tablas Hash. En el pseudocódigo del libro, expresiones como \`x.next = y\` o \`parent[x] = NIL\` asumen que el sistema operativo puede seguir referencias en memoria instantáneamente.
 
-* **Declaración de variable**: \`int x = 42;\` (Guarda el valor 42 en un casillero).
-* **Operador Dirección (\`&\`)**: \`&x\` obtiene la dirección de memoria donde vive \`x\`.
-* **Variab\le Puntero (\`*\`)**: \`int *p = &x;\` (La variable \`p\` almacena la dirección de memoria de \`x\`).
-* **Desreferenciación (\`*p\`)**: \`*p = 100;\` cambia el valor guardado en la dirección almacenada por \`p\` (modifica \`x\` a 100).
+Para implementar estos algoritmos en la realidad, el lenguaje C es la herramienta insustituible por excelencia. A diferencia de lenguajes con memoria administrada (Python, Java o JavaScript) donde la memoria RAM está oculta tras capas de abstracción, en C **el programador tiene control directo sobre cada byte físico de la memoria RAM del sistema**.
 
-\`\`\`c
-int x = 10;
-int *p = &x; // p apunta a x
+### Analogía Intuitiva
+La memoria RAM es un **hotel de lujo gigante con miles de millones de habitaciones numeradas de forma secuencial** (las direcciones hexadecimales de memoria, ej. \`0x7fff5fbff7c0\`):
+* Una **variable convencional** (\`int x = 42;\`) es una habitación donde el huésped (el número 42) vive adentro.
+* Un **puntero** (\`int *p = &x;\`) es un **papel que tiene anotado el número de la habitación** de \`x\`.
+* **Desreferenciar un puntero** (\`*p = 99;\`) es usar esa dirección anotada en el papel para caminar hacia la habitación y cambiar al huésped por un nuevo número 99.
 
-printf("Valor de x: %d\\n", x);   // Imprime 10
-printf("Dirección de x: %p\\n", p); // Imprime dirección en RAM
-*p = 25;                         // Modificamos x a través de p!
-printf("Nuevo x: %d\\n", x);      // Imprime 25
+---
+
+## 2. EXPLICACIÓN TEÓRICA AMPLIADA
+
+### 2.1 Los Tres Operadores Fundamentales de Memoria en C
+1. **Operador Dirección (\`&\`)**: Antepuesto a cualquier variable, extrae su dirección física inicial en la memoria RAM (expresada en hexadecimal).
+2. **Declarador de Puntero (\`*\`)**: En una declaración (\`T *ptr;\`), indica que la variable \`ptr\` no almacena un valor numérico directo, sino la dirección de memoria de un dato de tipo \`T\`.
+3. **Operador Desreferenciación / Indirección (\`*\`)**: Antepuesto a un puntero existente (\`*ptr\`), accede directamente al contenido almacenado en la dirección apuntada.
+
+#### Diagrama de Memoria RAM: Variable vs Puntero
+\`\`\`
+Dirección Hexadecimal  | Variable / Tipo | Contenido en RAM
+-----------------------|-----------------|------------------
+0x7fff5fbff7c0         | int x           | 42
+...                    | ...             | ...
+0x7fff5fbff7c8         | int *p          | 0x7fff5fbff7c0  (Apunta a x)
 \`\`\`
 
 ---
 
-### 3. Estructuras (\`struct\`) y Punteros en C
-En C, un \`struct\` agrupa datos relacionados. Para acceder a sus campos a través de un puntero usamos el operador f\lecha \`->\`:
+### 2.2 Estructuras Compuestas (\`struct\`) y el Operador Flecha (\`->\`)
+Un \`struct\` en C agrupa múltiples variables bajo un mismo nombre. Cuando manejamos punteros a estructuras (como en los nodos de Cormen), el lenguaje C proporciona el operador flecha \`->\` como un atajo sintáctico equivalente a la desreferenciación seguida del acceso a campo:
+
+$$\\text{puntero}->\\text{campo} \\equiv (*\\text{puntero}).\\text{campo}$$
 
 \`\`\`c
 struct Nodo {
-    int dato;
+    int clave;
     struct Nodo *siguiente;
 };
 
-struct Nodo n1;
-n1.dato = 5;
+struct Nodo n1 = {10, NULL};
+struct Nodo *ptr = &n1;
 
-struct Nodo *punteroNodo = &n1;
-punteroNodo->dato = 10; // Equiva\le a (*punteroNodo).dato = 10
+// Ambas líneas son idénticas en C:
+(*ptr).clave = 25;
+ptr->clave = 25; // Sintaxis preferida en CLRS y C Pro
 \`\`\`
-    `,
+
+---
+
+## 3. ANÁLISIS DE COMPLEJIDAD Y RENDIMIENTO
+
+### Tiempos de Acceso a Memoria
+* **Acceso Directo (\`x\`)**: $O(1)$ tiempo. El CPU lee la dirección de memoria asociada a la variable local en el stack frame actual.
+* **Acceso Indirecto por Puntero (\`*p\`)**: $O(1)$ tiempo. Requiere dos lecturas de bus de datos: primero lee la dirección guardada en \`p\` y luego busca el valor en esa dirección objetivo.
+* **Aritmética de Punteros (\`ptr + i\`)**: $O(1)$ tiempo. En C, sumar $i$ a un puntero de tipo \`T*\` incrementa la dirección física en $i \\times \\text{sizeof}(T)$ bytes.
+
+---
+
+## 4. APLICACIONES EN EL MUNDO REAL
+
+1. **Kernel de Sistemas Operativos (Linux / Windows)**: El planificador de tareas de Linux utiliza listas doblemente enlazadas de estructuras \`task_struct\` interconectadas mediante punteros en C.
+2. **Asignadores de Memoria (\`malloc\` / \`free\` / \`jemalloc\`)**: Los administradores de heap leen cabeceras de bloques libres desreferenciando punteros a la tabla de memoria.
+3. **Manejadores de Hardware y Drivers**: La lectura de puertos I/O (tarjetas de red, GPUs) requiere mapear punteros directamente a direcciones de memoria físicas de dispositivos PCI.
+
+---
+
+## 5. NOTAS DE IMPLEMENTACIÓN Y GOTCHAS EN C
+
+### 1. Punteros Salvajes (Wild Pointers) y Uninitialized Pointers
+Un puntero declarado sin inicializar (\`int *p;\`) contiene "basura" de memoria. Intentar desreferenciarlo (\`*p = 5;\`) provoca el error fatal de tiempo de ejecución **Segmentation Fault (core dumped)** o corrompe regiones aleatorias de la memoria del sistema.
+* **REGLA UNIVERSAL**: Inicializa siempre todo puntero no utilizado con \`NULL\` (\`int *p = NULL;\`).
+
+### 2. Violación del Principio de Aliasing y Punteros Colgantes (Dangling Pointers)
+Si dos punteros \`p1\` y \`p2\` apuntan a la misma dirección y liberas o destruyes la variable subyacente, \`p2\` queda "colgando".
+
+---
+
+## 6. GLOSARIO DE TÉRMINOS DE LA CLASE
+
+* **Puntero**: Variable que almacena una dirección de memoria en lugar de un valor directo.
+* **Desreferenciación**: Operación \`*\` que permite leer o modificar el valor alojado en la dirección a la que apunta un puntero.
+* **Puntero NULL**: Valor especial (habitualmente \`0x0\`) que representa un puntero que no apunta a ninguna dirección válida de memoria.
+* **Operador Flecha (\`->\`)**: Atajo sintáctico en C para acceder a miembros de un \`struct\` a través de un puntero.
+* **Segmentation Fault**: Violación de acceso de memoria generada por el procesador cuando un programa intenta leer o escribir en una dirección no permitida.
+
+---
+
+## 7. MATERIALES DE APOYO Y REFERENCIAS
+
+* **Para Profundizar en el Libro de Texto**:
+  * **CLRS 4ta Edición**: Capítulo 10 completo (*Elementary Data Structures*), Sección 10.3 (págs. 263–268).
+  * **Kernighan & Ritchie (K&R C)**: Capítulo 5 completo (*Pointers and Arrays*), Secciones 5.1 y 5.2.
+* **Guía de Uso de la Animación Interactiva de la Clase**:
+  * Activa la **Animación de Punteros y Memoria** ajustando el interruptor de desreferenciación para visualizar cómo cambia el valor de la variable objetivo cuando modificamos el puntero.
+* **Resumen en Una Frase**:
+  > *"Un puntero no es más que un número que indica en qué habitación de la RAM vive la información; dominar su desreferenciación es la clave para construir estructuras de datos dinámicas."*
+`,
     visualizerType: 'memory_pointers',
     checkQuestions: [
       {
         id: 'q3-1',
-        question: 'En C, si tenemos `int a = 50; int *ptr = &a;`, ¿qué hace la instrucción `*ptr = 99;`?',
+        question: 'En C, si tenemos `int a = 50; int *ptr = &a;`, ¿qué hace exactamente la instrucción `*ptr = 99;`?',
         options: [
-          'Cambia la dirección de memoria almacenada en ptr a 99.',
-          'Modifica directamente el valor de la variable `a` asignándo\le 99.',
-          'Produce un error de compilación.',
-          'Crea un nuevo puntero en memoria.'
+          'Cambia la dirección de memoria almacenada en ptr por el número 99.',
+          'Modifica directamente el valor almacenado en la variable `a` asignándole 99.',
+          'Produce un error de compilación por incompatibilidad de tipos.',
+          'Crea un nuevo puntero secundario en el stack.'
         ],
         correctIndex: 1,
-        explanation: '¡Exacto! El operador `*` (desreferenciación) accede al contenido guardado en la dirección de memoria a la que apunta `ptr`.',
-        analogousExplanation: 'Si `ptr` es el número de un casillero de correo, `*ptr = 99` abre ese casillero concreto y pone adentro el paquete número 99.'
+        explanation: '¡Exacto! El operador `*` (desreferenciación) accede a la celda de memoria cuya dirección está guardada en `ptr` (es decir, la variable `a`) y reemplaza su contenido por 99.',
+        analogousExplanation: 'Si `ptr` es el número de la habitación 104, `*ptr = 99` entra a la habitación 104 y cambia la cama por una nueva.'
+      },
+      {
+        id: 'q3-2',
+        question: 'Dada una estructura `struct Nodo { int clave; struct Nodo *next; } *p;`, ¿cuál es la sintaxis correcta equivalente a `(*p).clave`?',
+        options: ['p.clave', 'p->clave', 'p&*clave', 'p..clave'],
+        correctIndex: 1,
+        explanation: '¡Correcto! En C, el operador flecha `p->clave` es el atajo oficial para desreferenciar un puntero a estructura y acceder a uno de sus campos.',
+        analogousExplanation: 'Es simplemente una forma abreviada y limpia de escribir `(*p).clave` sin tener que llenar el código de paréntesis extra.'
       }
     ],
     exercises: [
       {
-        id: "ex-3",
-        title: "Ejercicio 3: Intercambio de Variables con Punteros (Swap) en C",
-        description: "Escribe una función en C `void intercambiar(int *a, int *b)` que intercambie los valores de dos enteros en memoria usando punteros y una variable temporal.",
-        cormenRef: "Cormen Cap 10.3 - Apéndice B (Punteros y Memoria)",
-        initialCode: "#include <stdio.h>\n\nvoid intercambiar(int *a, int *b) {\n  // TODO: Usa una variable temporal e intercambia los valores desreferenciando los punteros\n}",
-        solutionCode: "#include <stdio.h>\n\nvoid intercambiar(int *a, int *b) {\n  int temp = *a;\n  *a = *b;\n  *b = temp;\n}",
-        hint: "Usa `int temp = *a;` para guardar el valor desreferenciado de `a`, asigna `*a = *b;` y finalmente `*b = temp;`.",
+        id: 'ex-3-niv1',
+        title: 'Nivel 1 (Conceptual): Modificación Indirecta por Punteros',
+        description: 'Escribe una función en C `void duplicarValor(int *p)` que tome un puntero a un entero `p` y duplique el valor alojado en esa dirección de memoria.',
+        cormenRef: 'CLRS 4ta Ed., Sec 10.3 - Apéndice B',
+        initialCode: '#include <stdio.h>\n\nvoid duplicarValor(int *p) {\n    // TODO: Duplica el valor desreferenciando p\n}',
+        solutionCode: '#include <stdio.h>\n\nvoid duplicarValor(int *p) {\n    if (p != NULL) {\n        *p = (*p) * 2;\n    }\n}',
+        hint: 'Usa `*p = (*p) * 2;` para modificar el entero original en la memoria RAM.',
         testCases: [
           {
-                    "id": "t1",
-                    "description": "Intercambiar a=5, b=10",
-                    "input": "5, 10",
-                    "expectedOutput": "undefined"
+            id: 'tc-3-1',
+            description: 'Duplicar valor original val=21 (Resultado esperado: 42)',
+            input: '21',
+            expectedOutput: 'undefined'
           }
-],
-        explanation: "Al pasar las direcciones de memoria `&x` y `&y`, la función modifica directamente las variables originales en RAM mediante desreferenciación (`*`)."
+        ],
+        explanation: 'Al desreferenciar `*p`, modificamos directamente la variable en el scope invocador sin necesidad de retornar un nuevo valor.'
+      },
+      {
+        id: 'ex-3-niv2-bug',
+        title: 'Nivel 2 (Aplicación Guiada): Intercambio de Variables (Swap) con Punteros',
+        description: 'Un estudiante escribió la función `swap(int a, int b)` intentando intercambiar dos variables, pero descubrió que fuera de la función no cambiaban. Corrige la firma y el cuerpo usando punteros `int *a, int *b`.',
+        cormenRef: 'K&R C Cap 5.2 - Paso por Referencia',
+        initialCode: '#include <stdio.h>\n\nvoid intercambiarErroneo(int a, int b) {\n    // BUG: Pasa por valor, no modifica las variables originales fuera!\n    int temp = a;\n    a = b;\n    b = temp;\n}',
+        solutionCode: '#include <stdio.h>\n\nvoid intercambiar(int *a, int *b) {\n    if (a != NULL && b != NULL) {\n        int temp = *a;\n        *a = *b;\n        *b = temp;\n    }\n}',
+        hint: 'Cambia los parámetros a `int *a, int *b` e intercambia mediante `*a` y `*b`.',
+        testCases: [
+          {
+            id: 'tc-3-2',
+            description: 'Intercambiar a=10 y b=20',
+            input: '10, 20',
+            expectedOutput: 'undefined'
+          }
+        ],
+        explanation: 'Pasar direcciones de memoria `&a` y `&b` permite a la función modificar el estado en el frame de pila del llamador.'
+      },
+      {
+        id: 'ex-3-niv3-impl',
+        title: 'Nivel 3 (Implementación C): Modificador de Estructura de Nodo',
+        description: 'Dada la estructura `struct Elemento { int id; int valor; };`, escribe una función C `void actualizarElemento(struct Elemento *elem, int nuevoId, int nuevoValor)` que actualice ambos campos usando el operador flecha `->`.',
+        cormenRef: 'CLRS 4ta Ed., Sec 10.3 - Atributos de Objetos',
+        initialCode: '#include <stdio.h>\n\nstruct Elemento {\n    int id;\n    int valor;\n};\n\nvoid actualizarElemento(struct Elemento *elem, int nuevoId, int nuevoValor) {\n    // TODO: Actualiza id y valor mediante el operador flecha ->\n}',
+        solutionCode: '#include <stdio.h>\n\nstruct Elemento {\n    int id;\n    int valor;\n};\n\nvoid actualizarElemento(struct Elemento *elem, int nuevoId, int nuevoValor) {\n    if (elem != NULL) {\n        elem->id = nuevoId;\n        elem->valor = nuevoValor;\n    }\n}',
+        hint: 'Usa `elem->id = nuevoId;` y `elem->valor = nuevoValor;`.',
+        testCases: [
+          {
+            id: 'tc-3-3',
+            description: 'Actualizar struct a id=101, valor=500',
+            input: '101, 500',
+            expectedOutput: 'undefined'
+          }
+        ],
+        explanation: 'El operador `->` desreferencia la dirección del struct y modifica directamente los miembros de la estructura original.'
+      },
+      {
+        id: 'ex-3-niv4-analisis',
+        title: 'Nivel 4 (Análisis): Búsqueda de Mínimo y Máximo con Retorno Multivalor por Puntero',
+        description: 'En C una función solo puede retornar un único valor directamente. Implementa `void obtenerMinMax(int A[], int n, int *minVal, int *maxVal)` que devuelva el mínimo y el máximo de un arreglo escribiendo en los punteros provistos.',
+        cormenRef: 'CLRS 4ta Ed., Cap 9 - Medianas y Estadísticos de Orden',
+        initialCode: '#include <stdio.h>\n\nvoid obtenerMinMax(int A[], int n, int *minVal, int *maxVal) {\n    // TODO: Recorre A y asigna los resultados en *minVal y *maxVal\n}',
+        solutionCode: '#include <stdio.h>\n\nvoid obtenerMinMax(int A[], int n, int *minVal, int *maxVal) {\n    if (n <= 0 || minVal == NULL || maxVal == NULL) return;\n    int min = A[0];\n    int max = A[0];\n    for (int i = 1; i < n; i++) {\n        if (A[i] < min) min = A[i];\n        if (A[i] > max) max = A[i];\n    }\n    *minVal = min;\n    *maxVal = max;\n}',
+        hint: 'Inicializa `min = A[0]` y `max = A[0]`. Al terminar el recorrido asigna `*minVal = min;` y `*maxVal = max;`.',
+        testCases: [
+          {
+            id: 'tc-3-4',
+            description: 'Para [45, 12, 89, 3, 67], n=5 (Min=3, Max=89)',
+            input: '[45, 12, 89, 3, 67], 5',
+            expectedOutput: 'undefined'
+          }
+        ],
+        explanation: 'El patrón de pasar punteros de salida (`int *out`) es el mecanismo idiomático en C para retornar múltiples resultados desde una sola función.'
+      },
+      {
+        id: 'ex-3-niv5-desafio',
+        title: 'Nivel 5 (Desafío Avanzado Integrador): Simulador de Asignador de Memoria Fija (Arena Allocator)',
+        description: 'Implementa una estructura `struct Arena` que administre un arreglo buffer de enteros de tamaño fijo (ej. 100 enteros). Escribe la función `int* arenaAlloc(struct Arena *a, int tamano)` que devuelva un puntero al bloque asignado incrementando el desplazamiento (offset) interno. [Marcado como Avanzado]',
+        cormenRef: 'CLRS 4ta Ed., Sec 10.3 - Representación mediante arreglos',
+        initialCode: '#include <stdio.h>\n\nstruct Arena {\n    int buffer[100];\n    int offset;\n};\n\nvoid initArena(struct Arena *a) {\n    a->offset = 0;\n}\n\nint* arenaAlloc(struct Arena *a, int tamano) {\n    // TODO: Si offset + tamano <= 100, devuelve &a->buffer[offset] e incrementa offset\n    return NULL;\n}',
+        solutionCode: '#include <stdio.h>\n\nstruct Arena {\n    int buffer[100];\n    int offset;\n};\n\nvoid initArena(struct Arena *a) {\n    a->offset = 0;\n}\n\nint* arenaAlloc(struct Arena *a, int tamano) {\n    if (a == NULL || a->offset + tamano > 100) {\n        return NULL;\n    }\n    int *ptr = &a->buffer[a->offset];\n    a->offset += tamano;\n    return ptr;\n}',
+        hint: 'Verifica si `a->offset + tamano <= 100`. Si es así, calcula `ptr = &a->buffer[a->offset]`, suma `tamano` a `offset` y retorna `ptr`.',
+        testCases: [
+          {
+            id: 'tc-3-5',
+            description: 'Asignar bloque de 10 enteros en Arena limpia',
+            input: '10',
+            expectedOutput: 'undefined'
+          }
+        ],
+        explanation: 'Los asignadores por arena (Arena Allocators) son patrones de altísimo rendimiento usados en compiladores y motores de juegos para evitar la fragmentación de memoria de `malloc`.'
       }
     ],
     prevItemId: 'clase-2',

@@ -75,7 +75,6 @@ ${userCode ? `\`\`\`c\n${userCode}\n\`\`\`` : 'Sin código cargado.'}`;
           contents: formattedHistory,
           config: {
             systemInstruction: systemPrompt,
-            temperature: 0.7,
           },
         });
 

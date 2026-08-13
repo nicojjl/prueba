@@ -114,9 +114,11 @@ export default function App() {
     const foundClass = COURSES_DATA.find((item) =>
       (item.exercises || []).some((ex) => ex.id === exercise.id)
     );
-    if (foundClass) {
-      setSelectedItemId(foundClass.id);
+    if (!foundClass) {
+      console.warn(`No class found containing exercise ID: ${exercise.id}`);
+      return;
     }
+    setSelectedItemId(foundClass.id);
     setActiveTab('exercises');
     setViewMode('class');
   };
@@ -144,6 +146,8 @@ export default function App() {
             onOpenCCourse={() => setViewMode('c_course')}
             isVisualizerActive={viewMode === 'visualizer'}
             onOpenVisualizer={() => setViewMode('visualizer')}
+            isAlgoCourseActive={viewMode === 'class'}
+            onOpenAlgoCourse={() => setViewMode('class')}
             selectedCChapterId={selectedCChapterId}
             onSelectCChapter={handleSelectCChapter}
             completedCSubtopics={completedCSubtopics}

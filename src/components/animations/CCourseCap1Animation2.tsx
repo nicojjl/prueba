@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { InteractiveAnimationContainer } from './InteractiveAnimationContainer';
 import { motion } from 'motion/react';
-import { Terminal, RefreshCw, Check, Play } from 'lucide-react';
+import { Terminal } from 'lucide-react';
 
 export const CCourseCap1Animation2: React.FC = () => {
   const [maxN, setMaxN] = useState<number>(5);

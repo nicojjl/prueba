@@ -19,7 +19,7 @@ import {
   Zap,
   ListOrdered
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { AlgoVisualStep } from '../types';
 
 export interface VisualizerPreset<T = any> {
@@ -41,6 +41,7 @@ export interface AlgorithmVisualizerProps<TInput = any> {
   formatCustomInput?: (text: string) => TInput | null;
   customInputPlaceholder?: string;
   visualizerType?: 'array' | 'graph' | 'dp' | 'auto';
+  allowCustomInput?: boolean;
 }
 
 export const AlgorithmVisualizer: React.FC<AlgorithmVisualizerProps> = ({
@@ -54,7 +55,8 @@ export const AlgorithmVisualizer: React.FC<AlgorithmVisualizerProps> = ({
   generateSteps,
   formatCustomInput,
   customInputPlaceholder = 'Ingresa valores separados por coma...',
-  visualizerType = 'auto'
+  visualizerType = 'auto',
+  allowCustomInput = true
 }) => {
   const [currentInput, setCurrentInput] = useState<any>(defaultInput);
   const [customInputText, setCustomInputText] = useState<string>('');
@@ -530,22 +532,24 @@ export const AlgorithmVisualizer: React.FC<AlgorithmVisualizerProps> = ({
           </div>
 
           {/* Custom Input Form (If array or custom handler provided) */}
-          <form onSubmit={handleCustomInputSubmit} className="flex items-center gap-3">
-            <input
-              type="text"
-              placeholder={customInputPlaceholder}
-              value={customInputText}
-              onChange={(e) => setCustomInputText(e.target.value)}
-              className="flex-1 bg-[#F9F8F6] border border-[#E5E2DE] rounded-xl px-4 py-2.5 text-xs font-mono text-[#1A1A1A] focus:outline-none focus:border-[#C2410C]"
-            />
-            <button
-              type="submit"
-              className="px-4 py-2.5 bg-[#1A1A1A] hover:bg-[#33312E] text-white rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5"
-            >
-              <Zap className="w-3.5 h-3.5 text-[#FDBA74]" />
-              <span>Simular Datos</span>
-            </button>
-          </form>
+          {allowCustomInput && (
+            <form onSubmit={handleCustomInputSubmit} className="flex items-center gap-3">
+              <input
+                type="text"
+                placeholder={customInputPlaceholder}
+                value={customInputText}
+                onChange={(e) => setCustomInputText(e.target.value)}
+                className="flex-1 bg-[#F9F8F6] border border-[#E5E2DE] rounded-xl px-4 py-2.5 text-xs font-mono text-[#1A1A1A] focus:outline-none focus:border-[#C2410C]"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2.5 bg-[#1A1A1A] hover:bg-[#33312E] text-white rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5"
+              >
+                <Zap className="w-3.5 h-3.5 text-[#FDBA74]" />
+                <span>Simular Datos</span>
+              </button>
+            </form>
+          )}
         </div>
 
         {/* Right Panel: Synchronized CLRS Pseudocode & Variables Inspector (4-5 cols) */}

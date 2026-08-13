@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Layers, Play } from 'lucide-react';
+import { Layers } from 'lucide-react';
 
 export const RecursionTreeVisualizer: React.FC = () => {
   const [numN, setNumN] = useState<number>(4);
-  const [stepIndex, setStepIndex] = useState<number>(0);
 
   // Generate call stack frames for factorial(N)
   const stackFrames = [];
@@ -32,10 +31,7 @@ export const RecursionTreeVisualizer: React.FC = () => {
             min="1"
             max="6"
             value={numN}
-            onChange={(e) => {
-              setNumN(Number(e.target.value));
-              setStepIndex(0);
-            }}
+            onChange={(e) => setNumN(Number(e.target.value))}
             className="w-24 accent-emerald-500 cursor-pointer"
           />
         </div>

@@ -1358,7 +1358,7 @@ int main() {
         return self.items[-1] if self.items else None`
     },
     initialVisualData: {},
-    generateSteps: () => {
+    generateSteps: (customInput?: (number | string)[]) => {
       const steps: any[] = [];
       const stack: { value: string | number; active?: boolean }[] = [];
 
@@ -1368,7 +1368,7 @@ int main() {
         stackQueueState: []
       });
 
-      const pushVals = [10, 25, 42, 88];
+      const pushVals = customInput && customInput.length > 0 ? customInput : [10, 25, 42, 88];
       pushVals.forEach((val, idx) => {
         stack.push({ value: val, active: true });
         steps.push({
@@ -1379,12 +1379,15 @@ int main() {
       });
 
       // Pop step
-      stack.pop();
-      steps.push({
-        stepIndex: 5,
-        description: 'Pop(): Se remueve el elemento superior (88).',
-        stackQueueState: stack.map((s, i) => ({ ...s, active: i === stack.length - 1 }))
-      });
+      if (stack.length > 0) {
+        const popped = stack[stack.length - 1].value;
+        stack.pop();
+        steps.push({
+          stepIndex: pushVals.length + 1,
+          description: `Pop(): Se remueve el elemento superior (${popped}).`,
+          stackQueueState: stack.map((s, i) => ({ ...s, active: i === stack.length - 1 }))
+        });
+      }
 
       return steps;
     },
@@ -1450,7 +1453,7 @@ q.append(20)
 front = q.popleft() # dequeue -> 10`
     },
     initialVisualData: {},
-    generateSteps: () => {
+    generateSteps: (customInput?: (number | string)[]) => {
       const steps: any[] = [];
       const queue: { value: string | number; active?: boolean }[] = [];
 
@@ -1460,7 +1463,7 @@ front = q.popleft() # dequeue -> 10`
         stackQueueState: []
       });
 
-      const vals = ['Cliente A', 'Cliente B', 'Cliente C'];
+      const vals = customInput && customInput.length > 0 ? customInput : ['Cliente A', 'Cliente B', 'Cliente C'];
       vals.forEach((v, idx) => {
         queue.push({ value: v, active: true });
         steps.push({
@@ -1470,12 +1473,15 @@ front = q.popleft() # dequeue -> 10`
         });
       });
 
-      queue.shift();
-      steps.push({
-        stepIndex: 4,
-        description: 'Dequeue(): Atendido "Cliente A" (frente de la cola FIFO).',
-        stackQueueState: [...queue]
-      });
+      if (queue.length > 0) {
+        const dequeued = queue[0].value;
+        queue.shift();
+        steps.push({
+          stepIndex: vals.length + 1,
+          description: `Dequeue(): Atendido "${dequeued}" (frente de la cola FIFO).`,
+          stackQueueState: [...queue]
+        });
+      }
 
       return steps;
     },
@@ -1590,7 +1596,7 @@ def bfs(graph, start):
         { from: 'C', to: 'E' }
       ]
     },
-    generateSteps: () => {
+    generateSteps: (_customInput?: any) => {
       type NodeState = 'unvisited' | 'visiting' | 'visited' | 'current' | 'path';
       const nodes: { id: string; label: string; state: NodeState; x: number; y: number }[] = [
         { id: 'A', label: 'Nodo A', state: 'unvisited', x: 200, y: 50 },
@@ -2076,7 +2082,7 @@ bool solveNQ(std::vector<std::vector<int>>& board, int col, int n) {
     return board`
     },
     initialVisualData: {},
-    generateSteps: () => {
+    generateSteps: (_customInput?: any) => {
       const steps: any[] = [];
       const board = [
         ['.', '.', '.', '.'],

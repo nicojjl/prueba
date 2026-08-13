@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { InteractiveAnimationContainer } from './InteractiveAnimationContainer';
 import { motion } from 'motion/react';
-import { ArrowRight, CheckCircle2, RefreshCw } from 'lucide-react';
+import { CheckCircle2, RefreshCw } from 'lucide-react';
 
 export const AlgoClass1Animation2: React.FC = () => {
   // Initial array input state editable by user

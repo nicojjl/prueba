@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { InteractiveAnimationContainer } from './InteractiveAnimationContainer';
 import { motion } from 'motion/react';
-import { Cpu, HardDrive } from 'lucide-react';
+import { HardDrive } from 'lucide-react';
 
 export const CCourseCap1Animation1: React.FC = () => {
   const [selectedType, setSelectedType] = useState<'char' | 'short' | 'int' | 'float'>('int');

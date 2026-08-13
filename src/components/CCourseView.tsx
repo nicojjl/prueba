@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CChapter, Exercise, CheckQuestion } from '../types';
+import { Exercise } from '../types';
 import { C_COURSE_DATA } from '../data/cCourseData';
 import { CSyntaxHighlighter } from './CSyntaxHighlighter';
 import { MarkdownRenderer } from './MarkdownRenderer';
@@ -26,9 +26,10 @@ import {
   Sliders,
   Wrench
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { CCourseCap1Animation1 } from './animations/CCourseCap1Animation1';
 import { CCourseCap1Animation2 } from './animations/CCourseCap1Animation2';
+import { ExercisePlayground } from './ExercisePlayground';
 
 interface CCourseViewProps {
   completedSubtopics: string[]; // array of completed chapter or subtopic ids
@@ -53,20 +54,9 @@ export const CCourseView: React.FC<CCourseViewProps> = ({
 
   const [activeTab, setActiveTab] = useState<'theory' | 'analogies' | 'visualizer' | 'code' | 'exercises' | 'quiz'>('theory');
 
-  // Search & Filters
-  const [searchQuery, setSearchQuery] = useState<string>('');
-
   // Code Execution State
   const [executed, setExecuted] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
-
-  // Exercise State in Chapter
-  const [activeExerciseIndex, setActiveExerciseIndex] = useState<number>(0);
-  const currentExercise: Exercise | undefined = currentChapter.exercises?.[activeExerciseIndex] || currentChapter.exercises?.[0];
-  const [userCode, setUserCode] = useState<string>(currentExercise?.initialCode || '');
-  const [exerciseResult, setExerciseResult] = useState<string | null>(null);
-  const [exerciseSuccess, setExerciseSuccess] = useState<boolean | null>(null);
-  const [showHint, setShowHint] = useState<boolean>(false);
 
   // Quiz State
   const [userQuizAnswers, setUserQuizAnswers] = useState<Record<string, number>>({});
@@ -132,30 +122,12 @@ export const CCourseView: React.FC<CCourseViewProps> = ({
     }
     setExecuted(false);
     setCopied(false);
-    setActiveExerciseIndex(0);
-    const firstEx = C_COURSE_DATA.find((c) => c.id === chapId)?.exercises?.[0];
-    setUserCode(firstEx?.initialCode || '');
-    setExerciseResult(null);
-    setExerciseSuccess(null);
-    setShowHint(false);
   };
 
   const handleCopyCode = (codeStr: string) => {
     navigator.clipboard.writeText(codeStr);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleRunExercise = () => {
-    if (!currentExercise) return;
-    const testCase = currentExercise.testCases[0];
-    if (userCode.includes(currentExercise.solutionCode.trim().substring(0, 30)) || userCode.length > 40) {
-      setExerciseSuccess(true);
-      setExerciseResult(`[gcc -Wall -Wextra main.c -o main && ./main]\n\n✓ PRUEBA PASADA SATISFACTORIAMENTE:\nSalida obtenida: "${testCase?.expectedOutput || 'Ejecución exitosa'}"`);
-    } else {
-      setExerciseSuccess(false);
-      setExerciseResult(`[gcc -Wall -Wextra main.c -o main && ./main]\n\n✗ ERROR DE COMPILACIÓN O SALIDA INCOMPLETA:\nSe esperaba la salida: "${testCase?.expectedOutput || 'Salida válida'}"`);
-    }
   };
 
   const handleQuizAnswer = (questionId: string, optionIndex: number) => {
@@ -772,111 +744,7 @@ export const CCourseView: React.FC<CCourseViewProps> = ({
             className="space-y-6"
           >
             {currentChapter.exercises && currentChapter.exercises.length > 0 ? (
-              <div className="space-y-6">
-                {/* Exercise Selector Pills */}
-                <div className="flex flex-wrap items-center gap-2 border-b border-[#F2F1EE] pb-4">
-                  <span className="text-xs font-bold text-[#8C8882] mr-2">Seleccionar Práctica:</span>
-                  {currentChapter.exercises.map((ex, idx) => (
-                    <button
-                      key={ex.id}
-                      onClick={() => {
-                        setActiveExerciseIndex(idx);
-                        setUserCode(ex.initialCode);
-                        setExerciseResult(null);
-                        setExerciseSuccess(null);
-                        setShowHint(false);
-                      }}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-                        activeExerciseIndex === idx
-                          ? 'bg-[#C2410C] text-white shadow-xs'
-                          : 'bg-[#F9F8F6] hover:bg-[#E5E2DE] text-[#4A4742]'
-                      }`}
-                    >
-                      <Code className="w-3.5 h-3.5" />
-                      <span>{ex.title}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Active Exercise Workspace */}
-                {currentExercise && (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Left Problem Statement */}
-                    <div className="space-y-4">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#C2410C] bg-[#FFF7ED] px-2.5 py-0.5 rounded border border-[#FDBA74]">
-                          {currentExercise.cormenRef}
-                        </span>
-                        <h3 className="text-lg font-serif font-bold text-[#1A1A1A]">
-                          {currentExercise.title}
-                        </h3>
-                        <p className="text-xs text-[#4A4742] leading-relaxed">
-                          {currentExercise.description}
-                        </p>
-                      </div>
-
-                      <div className="p-4 bg-[#F9F8F6] border border-[#E5E2DE] rounded-xl space-y-2">
-                        <span className="text-xs font-bold text-[#1A1A1A] block">Casos de Prueba Requeridos:</span>
-                        {currentExercise.testCases.map((tc) => (
-                          <div key={tc.id} className="text-xs font-mono text-[#8C8882] bg-white p-2 rounded border border-[#E5E2DE]">
-                            <div>Salida Esperada: <span className="text-[#10B981] font-bold">{tc.expectedOutput}</span></div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <button
-                          onClick={() => setShowHint((prev) => !prev)}
-                          className="text-xs text-[#C2410C] font-semibold hover:underline flex items-center gap-1"
-                        >
-                          <Lightbulb className="w-3.5 h-3.5" />
-                          <span>{showHint ? 'Ocultar Pista' : 'Ver Pista'}</span>
-                        </button>
-                      </div>
-
-                      {showHint && (
-                        <div className="p-3 bg-[#FFF7ED] border border-[#FDBA74] rounded-xl text-xs text-[#C2410C]">
-                          💡 {currentExercise.hint}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Right Code Editor & Runner */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A]">
-                          Editor de Código C
-                        </span>
-                        <button
-                          onClick={handleRunExercise}
-                          className="px-5 py-2 bg-[#C2410C] hover:bg-[#9A3412] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
-                        >
-                          <Play className="w-3.5 h-3.5 fill-current" />
-                          <span>Compilar &amp; Validar</span>
-                        </button>
-                      </div>
-
-                      <textarea
-                        value={userCode}
-                        onChange={(e) => setUserCode(e.target.value)}
-                        rows={12}
-                        className="w-full bg-[#1A1A1A] text-emerald-400 p-4 rounded-xl border border-stone-800 font-mono text-xs focus:outline-none focus:border-[#C2410C] leading-relaxed resize-y"
-                      />
-
-                      {/* Result Box */}
-                      {exerciseResult && (
-                        <div className={`p-4 rounded-xl border font-mono text-xs whitespace-pre-wrap ${
-                          exerciseSuccess
-                            ? 'bg-[#ECFDF5] border-[#10B981] text-[#065F46]'
-                            : 'bg-rose-50 border-rose-300 text-rose-900'
-                        }`}>
-                          {exerciseResult}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <ExercisePlayground exercises={currentChapter.exercises} />
             ) : (
               <div className="p-8 text-center text-xs text-[#8C8882] bg-[#F9F8F6] rounded-xl">
                 No hay ejercicios asignados a este capítulo.
